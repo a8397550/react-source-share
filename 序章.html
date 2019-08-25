@@ -1,0 +1,85 @@
+<!-- /dist/index.html --> 
+<!doctype html>
+  <html>
+   <head>
+     <title>react</title>
+   </head>
+   <body> 
+    <div id="root">
+
+    </div>
+    <script>
+        // react-dom
+        // React.createClass()
+        // setState()
+        // static getDerivedStateFromProps(nextProps, prevState)
+        // render
+        // componentDidMount()
+        // static getDerivedStateFromProps(nextProps, prevState)
+        // shouldComponentUpdate(nextProps, nextState)
+        // getSnapshotBeforeUpdate
+        // render
+        // componentDidUpdate
+        
+        // componentDidCatch
+        
+        // componentWillUnMount
+
+        // __proto__
+        // prototype
+        // constructor
+
+        // 构造函数实例 new 一个实例的时候，这个实例可以使用那些属性和方法，
+        // 构造函数 this ，prototype
+        // function A(); A.fn = () => {}
+        // 构造函数原型对象 构造函数原型对象的构造函数原型对象
+
+
+        /*
+        constructor(props){
+            super(props);
+            this.state = {
+                value: props.value,
+                valueA: props.valueA,
+            }
+        }
+        static getDerivedStateFromProps(nextProps, prevState) {
+            // 相当于执行setState
+            if (prevState.value !== nextProps.value || prevState.valueA !== nextProps.valueA) {
+                return {
+                    value: nextProps.value,
+                    valueA: nextProps.valueA,
+                }
+            }
+            return null
+        }
+        
+        */
+
+        /* 16.3以前的oldProps与oldState与newProps与newState比较
+            componentWillReviceProps(nextProps) {
+                if (this.props.value !nextProps.value {
+                    this.valueState = true; // 这个状态值可以应用在其他得方法里
+                } else {
+                    this.valueState = false;
+                }
+            }
+            shouldComponentUpdate(nextProps, nextState) {
+                if (this.props.value !nextProps.value {
+                    this.propsState = true; // 这个状态值可以应用在其他得方法里
+                } else {
+                    this.propsState = false;
+                }
+                if (this.state.value !nextProps.value {
+                    this.stateState = true; // 这个状态值可以应用在其他得方法里
+                } else {
+                    this.stateState = false;
+                }
+            }
+        */
+    
+    </script>
+    <script src="./react.js"></script>
+    <script src="./react-dom.js"></script>
+   </body>
+  </html>

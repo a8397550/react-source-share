@@ -1,0 +1,33 @@
+<!-- /dist/index.html --> 
+<!doctype html>
+  <html>
+   <head>
+     <title>react</title>
+     <script src="./react.js"></script>
+     <script src="./react-dom.js"></script>
+     <style>
+         .classA {
+            color: red;
+         }
+         .classA .classB {
+            color: blue;
+         }
+     </style>
+   </head>
+   <body> 
+    <div id="root">
+
+    </div>
+    <script>
+       console.log("React", React);
+       console.log("ReactDOM", ReactDOM);
+    
+       var DivSon = React.createElement("div", { className: 'classB' }, "777");
+
+       // props.children
+       var Div = React.createElement("div", { className: 'classA' }, DivSon);
+       
+       ReactDOM.render(Div, document.getElementById('root'));
+    </script>
+   </body>
+  </html>
