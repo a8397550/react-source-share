@@ -7,7 +7,7 @@ class Mod extends React.component {
     }
     render() {
         return (<div>
-            <div onClick={()=>{}}>11</div>
+            <div onClick={()=>{console.log(this)}}>11</div>
             <div>22</div>
         </div>)
     }

@@ -20,8 +20,12 @@ function (_React$component) {
   var _proto = Mod.prototype;
 
   _proto.render = function render() {
+    var _this2 = this;
+
     return React.createElement("div", null, React.createElement("div", {
-      onClick: function onClick() {}
+      onClick: function onClick() {
+        console.log(_this2);
+      }
     }, "11"), React.createElement("div", null, "22"));
   };
 
