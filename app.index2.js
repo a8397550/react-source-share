@@ -20,7 +20,9 @@ function (_React$component) {
   var _proto = Mod.prototype;
 
   _proto.render = function render() {
-    return React.createElement("div", null, React.createElement("div", null, "11"), React.createElement("div", null, "22"));
+    return React.createElement("div", null, React.createElement("div", {
+      onClick: function onClick() {}
+    }, "11"), React.createElement("div", null, "22"));
   };
 
   return Mod;
