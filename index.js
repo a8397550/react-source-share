@@ -1,53 +1,44 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import "@babel/polyfill";
+import dva, { connect } from 'dva';
+import createLoading from 'dva-loading'; // dva自动处理loading的插件
+import {Router, Route, Switch} from 'dva/router'; // dva里嵌套的react-router
 
-const ThemeContext = React.createContext('light');
+const app = dva();
+console.log(app._store); // 顶部的 state 数据
 
-class App extends React.Component {
-  state = {
-    name: 'dark'
+app.use(createLoading());
+
+// 注册 Model
+app.model({
+  namespace: 'count', // 当前model的名称
+  state: {
+  	count: 0,
+  }, // 当前model的状态
+  reducers: { // 处理同步active
+    add(state) { return state.count + 1 },
+    minus(state) { return state.count - 1 },
   }
-  render() {
-    // 使用一个 Provider 来将当前的 theme 传递给以下的组件树。
-    // 无论多深，任何组件都能读取这个值。
-    // 在这个例子中，我们将 “dark” 作为当前的值传递下去。
-    return (
-      <ThemeContext.Provider 
-        value={{ value: this.state.name, rename: (name) => {
-          this.setState({
-            name,
-          })
-        } 
-      }}>
-        <Toolbar />
-      </ThemeContext.Provider>
-    );
-  }
+});
+
+
+function Home(props) {
+	return <div>
+      <div>hello world</div>
+      <h2>{ props.count }</h2>
+      <button key="add" onClick={() => { props.dispatch({type: 'count/add'})}}>+</button>
+      <button key="minus" onClick={() => { props.dispatch({type: 'count/minus'})}}>-</button>
+  </div>
 }
 
-// 中间的组件再也不必指明往下传递 theme 了。
-function Toolbar() {
-  return (
-    <div>
-      <ThemedButton />
-    </div>
-  );
-}
+connect(
+  (count) => count
+)(Home);
 
-class ThemedButton extends React.Component {
-  constructor(props, context) {
-    super(props);
-    console.log('props', props, context);
-  }
-  // 指定 contextType 读取当前的 theme context。
-  // React 会往上找到最近的 theme Provider，然后使用它的值。
-  // 在这个例子中，当前的 theme 值为 “dark”。
-  static contextType = ThemeContext;
-  render() {
-    console.log(this.context);
-    return <div onClick={()=>{ this.context.rename('888'); }}>{this.context.value}</div>;
-  }
-}
-  
-  ReactDOM.render(<App />, document.getElementById('root'));
+const router = <Router>
+      <Switch>
+        <Route path="/" exact component={Home} />
+      </Switch>
+    </Router>
+    
+app.router(()=> <Home />);
+
+app.start('#root');

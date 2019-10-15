@@ -33,6 +33,8 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.6.0",
+    "dva": "^2.4.1",
+    "dva-loading": "^3.0.14",
     "react": "^16.9.0",
     "react-dom": "^16.9.0"
   }
