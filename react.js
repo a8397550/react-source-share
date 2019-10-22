@@ -73,6 +73,10 @@
   var MAYBE_ITERATOR_SYMBOL = typeof Symbol === 'function' && Symbol.iterator;
   var FAUX_ITERATOR_SYMBOL = '@@iterator';
 
+  /**
+   * @description 返回一个对象的Iterator方法，一般形参是一个array
+   * @param {*} maybeIterable 
+   */
   function getIteratorFn(maybeIterable) {
     if (maybeIterable === null || typeof maybeIterable !== 'object') {
       return null;
@@ -84,10 +88,25 @@
     return null;
   }
 
+  /**
+   * @description 此方法返回对象的Symbol的属性与方法
+   */
   var getOwnPropertySymbols = Object.getOwnPropertySymbols;
+  /**
+   * @description 此方法可以验证一个key是否是一个对象的属性或方法
+   */
   var hasOwnProperty = Object.prototype.hasOwnProperty;
+  /**
+   * @description 检测一个属性是否是可枚举属性
+   */
   var propIsEnumerable = Object.prototype.propertyIsEnumerable;
 
+  /**
+   * @description 将值转换为对象，例如：Object(1)，会返回Number{1}, 可以通过valueOf()拿到变量的值
+   * @description 如果是一个DOM的话，Object(document.body)，会返回一个DOM对象
+   * 
+   * @param {*} val 
+   */
   function toObject(val) {
     if (val === null || val === undefined) {
       throw new TypeError('Object.assign cannot be called with null or undefined');
@@ -96,13 +115,18 @@
     return Object(val);
   }
 
+  /**
+   * @description 此方法主要是用来做环境检测的，看Object.assign是否可以用，如果通过环境检测返回true
+   * @description 首先判断有没有Object.assing方法如果没有return false
+   * @description 检测旧V8版本中的错误属性枚举顺序。
+   */
   function shouldUseNative() {
     try {
-      if (!Object.assign) {
+      if (!Object.assign) { // 首先判断有没有此方法，如果没有直接return false
         return false;
       }
 
-      // Detect buggy property enumeration order in older V8 versions.
+      // 检测旧V8版本中的错误属性枚举顺序。
 
       // https://bugs.chromium.org/p/v8/issues/detail?id=4118
       var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
@@ -140,9 +164,12 @@
     }
   }
 
+  /**
+   * @description 一个一定可以用的Object.assing方法，做了环境的处理，给了Polyfill的处理，Polyfill是旧版本没有支持，在旧版本实现功能的方法
+   */
   var objectAssign = shouldUseNative() ? Object.assign : function (target, source) {
     var from;
-    var to = toObject(target);
+    var to = toObject(target); // 有意思的点，这里将值转换为对象进行处理了
     var symbols;
 
     for (var s = 1; s < arguments.length; s++) {
@@ -167,47 +194,29 @@
     return to;
   };
 
-  // Do not require this module directly! Use normal `invariant` calls with
-  // template literal strings. The messages will be converted to ReactError during
-  // build, and in production they will be minified.
-
-  // Do not require this module directly! Use normal `invariant` calls with
-  // template literal strings. The messages will be converted to ReactError during
-  // build, and in production they will be minified.
-
+  
+  /**
+   * @description 给对象的name加一个值, error.name = 'Invariant Violation';
+   * @param {*} error 
+   */
   function ReactError(error) {
     error.name = 'Invariant Violation';
     return error;
   }
 
   /**
-   * Use invariant() to assert state which your program assumes to be true.
-   *
-   * Provide sprintf-style format (only %s is supported) and arguments
-   * to provide information about what broke and what you were
-   * expecting.
-   *
-   * The invariant message will be stripped in production, but the invariant
-   * will remain to ensure logic does not differ in production.
+   * @description 发出一个警告
+   * @param {boolean} condition boolean，是否发出警告，为false时发出警告
+   * @param {string} format string 警告的格式
+   * @param ...arguments 此内容时是向format填充的内容
    */
-
-  /**
-   * Forked from fbjs/warning:
-   * https://github.com/facebook/fbjs/blob/e66ba20ad5be433eb54423f2b097d829324d9de6/packages/fbjs/src/__forks__/warning.js
-   *
-   * Only change is we use console.warn instead of console.error,
-   * and do nothing when 'console' is not supported.
-   * This really simplifies the code.
-   * ---
-   * Similar to invariant but only logs a warning if the condition is not met.
-   * This can be used to log issues in development environments in critical
-   * paths. Removing the logging code for production environments will keep the
-   * same logic and follow the same code paths.
-   */
-
   var lowPriorityWarning = function () { };
 
   {
+    /**
+     * @description 这是一个错误提示的方法，第一个参数是格式，argments[1]和argments[1]后面的值会填充格式里面的内容
+     * @description 打印一个console.warn，然后throw new Error(message); throw是为了调试react使用的
+     */
     var printWarning = function (format) {
       for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         args[_key - 1] = arguments[_key];
@@ -221,12 +230,13 @@
         console.warn(message);
       }
       try {
-        // --- Welcome to debugging React ---
-        // This error was thrown as a convenience so that you can use this stack
-        // to find the callsite that caused this warning to fire.
+        // ---欢迎使用调试React---
+        // 为了方便您使用这个堆栈，抛出了这个错误
+        // 查找导致此警告触发的调用站点。
         throw new Error(message);
       } catch (x) { }
     };
+
 
     lowPriorityWarning = function (condition, format) {
       if (format === undefined) {
@@ -242,14 +252,14 @@
     };
   }
 
-  var lowPriorityWarning$1 = lowPriorityWarning;
 
   /**
-   * Similar to invariant but only logs a warning if the condition is not met.
-   * This can be used to log issues in development environments in critical
-   * paths. Removing the logging code for production environments will keep the
-   * same logic and follow the same code paths.
+   * @description 发出一个警告
+   * @param {boolean} condition boolean，是否发出警告，为false时发出警告
+   * @param {string} format string 警告的格式
+   * @param ...arguments 此内容时是向format填充的内容
    */
+  var lowPriorityWarning$1 = lowPriorityWarning;
 
   var warningWithoutStack = function () { };
 
@@ -802,23 +812,14 @@
   }
 
   /**
-   * Factory method to create a new React element. This no longer adheres to
-   * the class pattern, so do not use new to call it. Also, no instanceof check
-   * will work. Instead test $$typeof field against Symbol.for('react.element') to check
-   * if something is a React Element.
-   *
+   * @description 返回一个ReactElement对象
    * @param {*} type
    * @param {*} props
    * @param {*} key
    * @param {string|object} ref
    * @param {*} owner
-   * @param {*} self A *temporary* helper to detect places where `this` is
-   * different from the `owner` when React.createElement is called, so that we
-   * can warn. We want to get rid of owner and replace string `ref`s with arrow
-   * functions, and as long as `this` and owner are the same, there will be no
-   * change in behavior.
-   * @param {*} source An annotation object (added by a transpiler or otherwise)
-   * indicating filename, line number, and/or other information.
+   * @param {*} self 
+   * @param {*} source 
    * @internal
    */
   var ReactElement = function (type, key, ref, self, source, owner, props) {
@@ -1001,7 +1002,7 @@
       props.children = childArray;
     }
 
-    // 自身的defaultProps的设置
+    // 如果type存在，并且具备defaultProps属性时，此时type一般为函数类型，将defaultProps的value赋值到props里面，注意这里不是递归的哦，只处理第一层
     if (type && type.defaultProps) {
       var defaultProps = type.defaultProps;
       for (propName in defaultProps) {
@@ -1012,7 +1013,7 @@
     }
     // 有没有key或ref
     {
-      if (key || ref) {
+      if (key || ref) { // 如果key存在或者ref存在
         var displayName = typeof type === 'function' ? type.displayName || type.name || 'Unknown' : type;
         if (key) {
           defineKeyPropWarningGetter(props, displayName);
