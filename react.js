@@ -1,11 +1,5 @@
 /** @license React v16.9.0
- * react.development.js
- *
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
+*/
 
 'use strict';
 
@@ -20,37 +14,30 @@
    * @description React的版本号
    */
   var ReactVersion = '16.9.0';
-
   /**
    * @description 检测是否支持Symbol用的
    */
   var hasSymbol = typeof Symbol === 'function' && Symbol.for;
-
   /**
    * @description Symbol.for('react.element')
    */
   var REACT_ELEMENT_TYPE = hasSymbol ? Symbol.for('react.element') : 0xeac7;
-  
   /**
    * @description Symbol.for('react.portal')
    */
   var REACT_PORTAL_TYPE = hasSymbol ? Symbol.for('react.portal') : 0xeaca;
-
   /**
    * @description Symbol.for('react.fragment') 分组用的标识，React.Fragment允许将子列表分组，而无需向 DOM 添加额外节点
    */
   var REACT_FRAGMENT_TYPE = hasSymbol ? Symbol.for('react.fragment') : 0xeacb;
-
   /**
    * @description 不知道这个是干什么的
    */
   var REACT_STRICT_MODE_TYPE = hasSymbol ? Symbol.for('react.strict_mode') : 0xeacc;
-  
   /**
    * @description 不知道这个是干什么的
    */
   var REACT_PROFILER_TYPE = hasSymbol ? Symbol.for('react.profiler') : 0xead2;
-
   /**
    * @description  Symbol.for('react.provider') React.context.provider组件标识
    */
@@ -70,11 +57,18 @@
   var REACT_FUNDAMENTAL_TYPE = hasSymbol ? Symbol.for('react.fundamental') : 0xead5;
   var REACT_RESPONDER_TYPE = hasSymbol ? Symbol.for('react.responder') : 0xead6;
 
+  /**
+   * @description 查看Symbol函数能不能使用，能使用返回Symbol.iterator，不能使用返回fasle
+  */
   var MAYBE_ITERATOR_SYMBOL = typeof Symbol === 'function' && Symbol.iterator;
+  /**
+  * @description 查看Symbol不能使用时，使用@@iterator字符串
+  */
   var FAUX_ITERATOR_SYMBOL = '@@iterator';
 
   /**
    * @description 返回一个对象的Iterator方法，一般形参是一个array
+   * @description 如果Symbol函数存在，就将如参的maybeIterable[Symbol.iterator]方法返回
    * @param {*} maybeIterable 
    */
   function getIteratorFn(maybeIterable) {
@@ -104,7 +98,7 @@
   /**
    * @description 将值转换为对象，例如：Object(1)，会返回Number{1}, 可以通过valueOf()拿到变量的值
    * @description 如果是一个DOM的话，Object(document.body)，会返回一个DOM对象
-   * 
+   * @description 如果val是null或undefined时，抛出一个异常
    * @param {*} val 
    */
   function toObject(val) {
@@ -116,6 +110,7 @@
   }
 
   /**
+   * @description 结合源码上下文，它的作用时检测环境是否可用，如果可以用就可以使用Object.assign的方法了，如果不可用就用Polyfill
    * @description 此方法主要是用来做环境检测的，看Object.assign是否可以用，如果通过环境检测返回true
    * @description 首先判断有没有Object.assing方法如果没有return false
    * @description 检测旧V8版本中的错误属性枚举顺序。
@@ -196,7 +191,7 @@
 
   
   /**
-   * @description 给对象的name加一个值, error.name = 'Invariant Violation';
+   * @description 接收一个Error对象并给此对象的name赋值, error.name = 'Invariant Violation';在返回这个Error对象
    * @param {*} error 
    */
   function ReactError(error) {
@@ -205,7 +200,7 @@
   }
 
   /**
-   * @description 发出一个警告
+   * @description 发出一个warn警告
    * @param {boolean} condition boolean，是否发出警告，为false时发出警告
    * @param {string} format string 警告的格式
    * @param ...arguments 此内容时是向format填充的内容
@@ -227,7 +222,7 @@
         return args[argIndex++];
       });
       if (typeof console !== 'undefined') {
-        console.warn(message);
+        console.warn(message); // 发出一个黄色警告
       }
       try {
         // ---欢迎使用调试React---
@@ -246,7 +241,7 @@
         for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
           args[_key2 - 2] = arguments[_key2];
         }
-
+        // apply(argA, array); 第一个参数代替this，第二个参数是数组表示传入方法中的参数列表
         printWarning.apply(undefined, [format].concat(args));
       }
     };
@@ -261,6 +256,13 @@
    */
   var lowPriorityWarning$1 = lowPriorityWarning;
 
+
+  /**
+   * @description 发出一个error警告
+   * @param {boolean} condition boolean，是否发出警告，为false时发出警告
+   * @param {string} format string 警告的格式
+   * @param ...arguments 此内容时是向format填充的内容
+   */
   var warningWithoutStack = function () { };
 
   {
@@ -270,10 +272,11 @@
       }
 
       if (format === undefined) {
+        // 格式字符串没有发出警告
         throw new Error('`warningWithoutStack(condition, format, ...args)` requires a warning ' + 'message argument');
       }
       if (args.length > 8) {
-        // Check before the condition to catch violations early.
+        // 参数太多也发出警告
         throw new Error('warningWithoutStack() currently supports at most 8 arguments.');
       }
       if (condition) {
@@ -287,12 +290,13 @@
 
         // We intentionally don't use spread (or .apply) directly because it
         // breaks IE9: https://github.com/facebook/react/issues/13610
+        // call(argA, ...); 第一个参数表示this，后面的参数是参数列表
         Function.prototype.apply.call(console.error, console, argsWithFormat);
       }
       try {
-        // --- Welcome to debugging React ---
-        // This error was thrown as a convenience so that you can use this stack
-        // to find the callsite that caused this warning to fire.
+        // ---欢迎使用调试React---
+        // 为了方便您使用这个堆栈，抛出了这个错误
+        // 查找导致此警告触发的调用站点。
         var argIndex = 0;
         var message = 'Warning: ' + format.replace(/%s/g, function () {
           return args[argIndex++];
@@ -302,10 +306,24 @@
     };
   }
 
+  /**
+   * @description 发出一个警告error警告
+   * @param {boolean} condition boolean，是否发出警告，为false时发出警告
+   * @param {string} format string 警告的格式
+   * @param ...arguments 此内容时是向format填充的内容
+   */
   var warningWithoutStack$1 = warningWithoutStack;
 
+  /**
+   * @description warnNoop方法的控制参数，如果抛出过的异常就不在抛了
+   * */
   var didWarnStateUpdateForUnmountedComponent = {};
 
+  /**
+   * @description 作用未知
+   * @param {*} publicInstance 
+   * @param {*} callerName 
+   */
   function warnNoop(publicInstance, callerName) {
     {
       var _constructor = publicInstance.constructor;
@@ -320,13 +338,14 @@
   }
 
   /**
-   * This is the abstract API for an update queue.
+   * @description 这是更新队列的抽象api。 This is the abstract API for an update queue.
+   * @description 重要
    */
   var ReactNoopUpdateQueue = {
     /**
-     * Checks whether or not this composite component is mounted.
-     * @param {ReactClass} publicInstance The instance we want to test.
-     * @return {boolean} True if mounted, false otherwise.
+     * 检查是否已安装此组合组件。
+     * @param {ReactClass} publicInstance 我们要测试的实例。
+     * @return {boolean} 如果已安装，则为true；否则为false。
      * @protected
      * @final
      */
@@ -387,50 +406,33 @@
     }
   };
 
+  /**
+   * @description 声明一个对象，然后冻结它；
+  */
   var emptyObject = {};
   {
     Object.freeze(emptyObject);
   }
 
   /**
-   * Base class helpers for the updating state of a component.
+   * @description react class组件的函数原型 Component
+   * @param {*} props 
+   * @param {*} context 
+   * @param {*} updater 
    */
   function Component(props, context, updater) {
     this.props = props;
     this.context = context;
-    // If a component has string refs, we will assign a different object later.
+    // 如果一个组件有字符串引用，我们稍后将分配一个不同的对象。
     this.refs = emptyObject;
-    // We initialize the default updater but the real one gets injected by the
-    // renderer.
+    // 我们初始化了默认的更新程序，但真正的更新程序是由rerender注入的
     this.updater = updater || ReactNoopUpdateQueue;
   }
 
   Component.prototype.isReactComponent = {};
 
   /**
-   * Sets a subset of the state. Always use this to mutate
-   * state. You should treat `this.state` as immutable.
-   *
-   * There is no guarantee that `this.state` will be immediately updated, so
-   * accessing `this.state` after calling this method may return the old value.
-   *
-   * There is no guarantee that calls to `setState` will run synchronously,
-   * as they may eventually be batched together.  You can provide an optional
-   * callback that will be executed when the call to setState is actually
-   * completed.
-   *
-   * When a function is provided to setState, it will be called at some point in
-   * the future (not synchronously). It will be called with the up to date
-   * component arguments (state, props, context). These values can be different
-   * from this.* because your function may be called after receiveProps but before
-   * shouldComponentUpdate, and this new state, props, and context will not yet be
-   * assigned to this.
-   *
-   * @param {object|function} partialState Next partial state or function to
-   *        produce next partial state to be merged with current state.
-   * @param {?function} callback Called after state is updated.
-   * @final
-   * @protected
+   * @description setState方法
    */
   Component.prototype.setState = function (partialState, callback) {
     (function () {
@@ -490,7 +492,10 @@
   ComponentDummy.prototype = Component.prototype;
 
   /**
-   * Convenience component with default shallow equality check for sCU.
+   * @description react class组件的函数原型 PureComponent
+   * @param {*} props 
+   * @param {*} context 
+   * @param {*} updater 
    */
   function PureComponent(props, context, updater) {
     this.props = props;
@@ -506,7 +511,9 @@
   objectAssign(pureComponentPrototype, Component.prototype);
   pureComponentPrototype.isPureReactComponent = true;
 
-  // an immutable object with a single mutable value
+  /**
+   * @description creataRef 创建一个占位对象，并将它密封Object.seal({current: null});然后返回这个对象；
+  */
   function createRef() {
     var refObject = {
       current: null
@@ -590,6 +597,10 @@
     return outerType.displayName || (functionName !== '' ? wrapperName + '(' + functionName + ')' : wrapperName);
   }
 
+  /**
+   * @description 返回组件的名称，通过标示返回react私有组件名称string值
+   * @return {string} 返回一个string值
+  */
   function getComponentName(type) {
     if (type == null) {
       // Host root, text node or just invalid type.
@@ -879,19 +890,8 @@
   };
 
   /**
-   * https://github.com/reactjs/rfcs/pull/107
-   * @param {*} type
-   * @param {object} props
-   * @param {string} key
-   */
-
-
-  /**
-   * https://github.com/reactjs/rfcs/pull/107
-   * @param {*} type
-   * @param {object} props
-   * @param {string} key
-   */
+   * @description 此方法返回和React.creataElement一样
+  */
   function jsxDEV(type, config, maybeKey, source, self) {
     var propName = void 0;
 
@@ -1027,11 +1027,10 @@
   }
 
   /**
-   * Return a function that produces ReactElements of a given type.
-   * See https://reactjs.org/docs/react-api.html#createfactory
+   * @description 返回一个新的ReactElement对象，改变它的key值
+   * @param {*} oldElement 
+   * @param {*} newKey 
    */
-
-
   function cloneAndReplaceKey(oldElement, newKey) {
     var newElement = ReactElement(oldElement.type, newKey, oldElement.ref, oldElement._self, oldElement._source, oldElement._owner, oldElement.props);
 
@@ -1039,8 +1038,10 @@
   }
 
   /**
-   * Clone and return a new ReactElement using element as the starting point.
-   * See https://reactjs.org/docs/react-api.html#cloneelement
+   * @description clone一个新组件
+   * @param {*} element 
+   * @param {*} config 
+   * @param {*} children 
    */
   function cloneElement(element, config, children) {
     (function () {
@@ -1613,6 +1614,11 @@
     return lazyType;
   }
 
+
+  /**
+   * @description ref转发 提供给外部的方法，不被内部所调用
+   * @param {*} render 
+   */
   function forwardRef(render) {
     {
       if (render != null && render.$$typeof === REACT_MEMO_TYPE) {
