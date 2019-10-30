@@ -1,0 +1,35 @@
+<!-- /dist/index.html --> 
+<!doctype html>
+  <html>
+   <head>
+     <title>react</title>
+     <script src="./react.js"></script>
+     <script src="./react-dom.js"></script>
+     <style>
+         .classA {
+            color: red;
+         }
+         .classA .classB {
+            color: blue;
+         }
+     </style>
+   </head>
+   <body> 
+    <div id="root">
+
+    </div>
+    <script>
+       console.log("React", React);
+       console.log("ReactDOM", ReactDOM);
+    
+       var DivSon = React.createElement("div", { className: 'classB', onClick: function(){ console.log("点击事件哦") } }, "777");
+       var DivSonA = React.createElement("span", { className: 'classC' }, "这里是一个span");
+       // props.children
+       // ref的使用
+       // setState如何触发
+       var Div = React.createElement("div", { className: 'classA' }, DivSon, 999, DivSonA);
+       
+       ReactDOM.render(Div, document.getElementById('root'));
+    </script>
+   </body>
+  </html>

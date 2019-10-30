@@ -58,15 +58,6 @@
   var REACT_RESPONDER_TYPE = hasSymbol ? Symbol.for('react.responder') : 0xead6;
 
   /**
-   * @description 查看Symbol函数能不能使用，能使用返回Symbol.iterator，不能使用返回fasle
-  */
-  var MAYBE_ITERATOR_SYMBOL = typeof Symbol === 'function' && Symbol.iterator;
-  /**
-  * @description 查看Symbol不能使用时，使用@@iterator字符串
-  */
-  var FAUX_ITERATOR_SYMBOL = '@@iterator';
-
-  /**
    * @description 返回一个对象的Iterator方法，一般形参是一个array
    * @description 如果Symbol函数存在，就将如参的maybeIterable[Symbol.iterator]方法返回
    * @param {*} maybeIterable 
@@ -75,17 +66,19 @@
     if (maybeIterable === null || typeof maybeIterable !== 'object') {
       return null;
     }
-    var maybeIterator = MAYBE_ITERATOR_SYMBOL && maybeIterable[MAYBE_ITERATOR_SYMBOL] || maybeIterable[FAUX_ITERATOR_SYMBOL];
+    var maybeIterator = typeof Symbol === 'function' && maybeIterable[Symbol.iterator] || maybeIterable['@@iterator'];
+
     if (typeof maybeIterator === 'function') {
       return maybeIterator;
     }
     return null;
   }
 
-  /**
-   * @description 此方法返回对象的Symbol的属性与方法
-   */
-  var getOwnPropertySymbols = Object.getOwnPropertySymbols;
+  var a = [1, 2, 3, 4];
+  var iterFn = getIteratorFn(a);
+  var b = iterFn.apply(a);
+  console.log(b.next());
+
   /**
    * @description 此方法可以验证一个key是否是一个对象的属性或方法
    */
@@ -94,20 +87,6 @@
    * @description 检测一个属性是否是可枚举属性
    */
   var propIsEnumerable = Object.prototype.propertyIsEnumerable;
-
-  /**
-   * @description 将值转换为对象，例如：Object(1)，会返回Number{1}, 可以通过valueOf()拿到变量的值
-   * @description 如果是一个DOM的话，Object(document.body)，会返回一个DOM对象
-   * @description 如果val是null或undefined时，抛出一个异常
-   * @param {*} val 
-   */
-  function toObject(val) {
-    if (val === null || val === undefined) {
-      throw new TypeError('Object.assign cannot be called with null or undefined');
-    }
-
-    return Object(val);
-  }
 
   /**
    * @description 结合源码上下文，它的作用时检测环境是否可用，如果可以用就可以使用Object.assign的方法了，如果不可用就用Polyfill
@@ -164,6 +143,13 @@
    */
   var objectAssign = shouldUseNative() ? Object.assign : function (target, source) {
     var from;
+    var toObject = function (val) {
+      if (val === null || val === undefined) {
+        throw new TypeError('Object.assign cannot be called with null or undefined');
+      }
+  
+      return Object(val);
+    }
     var to = toObject(target); // 有意思的点，这里将值转换为对象进行处理了
     var symbols;
 
@@ -171,13 +157,13 @@
       from = Object(arguments[s]);
 
       for (var key in from) {
-        if (hasOwnProperty.call(from, key)) {
+        if (Object.prototype.hasOwnProperty.call(from, key)) {
           to[key] = from[key];
         }
       }
 
-      if (getOwnPropertySymbols) {
-        symbols = getOwnPropertySymbols(from);
+      if (Object.getOwnPropertySymbols) {
+        symbols = Object.getOwnPropertySymbols(from);
         for (var i = 0; i < symbols.length; i++) {
           if (propIsEnumerable.call(from, symbols[i])) {
             to[symbols[i]] = from[symbols[i]];
@@ -199,8 +185,24 @@
     return error;
   }
 
+  var a = (function(error){
+    error.name = 'Invariant Violation';
+      return error;
+  })(new Error);
+
+  /*
+    console.error(a);
+    Invariant Violation
+      at file:///Users/lijunyang/project/react-source-share/react.js:191:6
+      at file:///Users/lijunyang/project/react-source-share/react.js:9:23
+      at file:///Users/lijunyang/project/react-source-share/react.js:10:2
+  */
+
+
   /**
    * @description 发出一个warn警告
+   * @description lowPriorityWarning(false, 'aaa %s bbb %s', 'ccc', '888')
+   * @description VM2916:24 Warning: aaa ccc bbb 888
    * @param {boolean} condition boolean，是否发出警告，为false时发出警告
    * @param {string} format string 警告的格式
    * @param ...arguments 此内容时是向format填充的内容
@@ -247,18 +249,10 @@
     };
   }
 
-
-  /**
-   * @description 发出一个警告
-   * @param {boolean} condition boolean，是否发出警告，为false时发出警告
-   * @param {string} format string 警告的格式
-   * @param ...arguments 此内容时是向format填充的内容
-   */
-  var lowPriorityWarning$1 = lowPriorityWarning;
-
-
   /**
    * @description 发出一个error警告
+   * @description warningWithoutStack(false, 'ccc %s bbb %s', 'aaa', 'ccc');
+   * @description VM3012:29 Warning: ccc aaa bbb ccc
    * @param {boolean} condition boolean，是否发出警告，为false时发出警告
    * @param {string} format string 警告的格式
    * @param ...arguments 此内容时是向format填充的内容
@@ -307,7 +301,9 @@
   }
 
   /**
-   * @description 发出一个警告error警告
+   * @description 发出一个error警告
+   * @description warningWithoutStack$1(false, 'ccc %s bbb %s', 'aaa', 'ccc');
+   * @description VM3012:29 Warning: ccc aaa bbb ccc
    * @param {boolean} condition boolean，是否发出警告，为false时发出警告
    * @param {string} format string 警告的格式
    * @param ...arguments 此内容时是向format填充的内容
@@ -326,6 +322,7 @@
    */
   function warnNoop(publicInstance, callerName) {
     {
+      debugger;
       var _constructor = publicInstance.constructor;
       var componentName = _constructor && (_constructor.displayName || _constructor.name) || 'ReactClass';
       var warningKey = componentName + '.' + callerName;
@@ -476,7 +473,7 @@
     var defineDeprecationWarning = function (methodName, info) {
       Object.defineProperty(Component.prototype, methodName, {
         get: function () {
-          lowPriorityWarning$1(false, '%s(...) is deprecated in plain JavaScript React classes. %s', info[0], info[1]);
+          lowPriorityWarning(false, '%s(...) is deprecated in plain JavaScript React classes. %s', info[0], info[1]);
           return undefined;
         }
       });
@@ -2221,7 +2218,7 @@
       Object.defineProperty(validatedFactory, 'type', {
         enumerable: false,
         get: function () {
-          lowPriorityWarning$1(false, 'Factory.type is deprecated. Access the class directly ' + 'before passing it to createFactory.');
+          lowPriorityWarning(false, 'Factory.type is deprecated. Access the class directly ' + 'before passing it to createFactory.');
           Object.defineProperty(this, 'type', {
             value: type
           });

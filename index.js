@@ -1,44 +1,45 @@
-import dva, { connect } from 'dva';
-import createLoading from 'dva-loading'; // dva自动处理loading的插件
-import {Router, Route, Switch} from 'dva/router'; // dva里嵌套的react-router
-
-const app = dva();
-console.log(app._store); // 顶部的 state 数据
-
-app.use(createLoading());
-
-// 注册 Model
-app.model({
-  namespace: 'count', // 当前model的名称
-  state: {
-  	count: 0,
-  }, // 当前model的状态
-  reducers: { // 处理同步active
-    add(state) { return state.count + 1 },
-    minus(state) { return state.count - 1 },
+var Son = React.createElement('div', {
+  children: '888',
+  componentDidMount: function() {
+    // 这玩意不会被执行，不是生命周期，会提示Warning, 
+    // 只有React.createElement(fn:function, {});的React元素才有生命周期
   }
-});
+})
 
-
-function Home(props) {
-	return <div>
-      <div>hello world</div>
-      <h2>{ props.count }</h2>
-      <button key="add" onClick={() => { props.dispatch({type: 'count/add'})}}>+</button>
-      <button key="minus" onClick={() => { props.dispatch({type: 'count/minus'})}}>-</button>
-  </div>
-}
-
-connect(
-  (count) => count
-)(Home);
-
-const router = <Router>
-      <Switch>
-        <Route path="/" exact component={Home} />
-      </Switch>
-    </Router>
-    
-app.router(()=> <Home />);
-
-app.start('#root');
+var Parent = (function (Component) {
+  Mod.prototype = Object.create(Component.prototype);
+  Mod.prototype.constructor = Mod;
+  Mod.__proto__ = Component;
+  function Mod(props) {
+    var _this;
+    _this = Component.call(this, props) || this;
+    _this.state = { name: 'TestMod' };
+    this.componentDidMount = function () {
+      console.log('componentDidMount')
+    }
+    return _this; 
+  }
+  Mod.getDerivedStateFromProps = function () {
+    console.log('888')
+    return null;
+  }
+  Mod.prototype.render = function () {
+    const self = this;
+    console.log(self.state.name);
+    return React.createElement(
+      'div',
+      {
+        children: self.state.name,
+        key: 'Parent',
+        id: 'Parent',
+        onClick: () => {
+          self.setState({
+            name: 'Parent',
+          })
+        }
+      }
+    );
+  }
+  return Mod;
+}(React.Component))
+ReactDOM.render(React.createElement(Parent, null), document.getElementById('root'))
