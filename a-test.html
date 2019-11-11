@@ -57,6 +57,7 @@
                         key: 'Parent',
                         id: 'Parent',
                         onClick: () => {
+                            debugger;
                             self.setState({
                                 name: 'Parent',
                             })
@@ -68,7 +69,7 @@
         }(React.Component))
 
         ReactDOM.render(React.createElement(Parent, null), document.getElementById('root'))
-        ReactDOM.render(Son, document.getElementById('root'))
+        // ReactDOM.render(Son, document.getElementById('root'))
     </script>
 
 </body>
