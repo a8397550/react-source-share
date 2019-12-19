@@ -18,41 +18,28 @@ if (!loadPath) {
   return;
 }
 
-var fsRead = function (fd, buffer) {
-  
-  //每一个汉字utf8编码是3个字节，英文是1个字节
-  fs.read(fd, buffer, 0, 255, null, function (err, bytesRead, buffer) {
-    if(err) {
-      throw err;
-    } else {
-      if (bytesRead === 255) {
-        console.log(buffer.toString());
-        fsRead(fd, buffer);
-        return;
-      }
-      console.log(bytesRead);
-      console.log(buffer.slice(0, bytesRead).toString());
-    }
-  });
-}
-
-fs.open(path.join(__dirname, loadPath), 'r', function (err, fd) {
-  if(err) {
-    console.error(err);
-    return;
-  } else {
-    var buffer = Buffer.alloc(255);
-    fsRead(fd, buffer);
-  }
-});
-
 console.log('>>>>>>>>>>>>>>')
 
 fs.readFile(path.join(__dirname, loadPath), (err, data) => {
   if (err) throw err;
   // console.log(data.toString());
+  debugger;
+  var text = data.toString();
+  text = text.split('\n');
+  for (var i = 0; i < text.length; i += 1) {
+    text[i] = text[i].replace(/(:)?\/\/(.)*/, function() {
+      if (arguments[0][0].indexOf(":") !== -1) {
+        return arguments[0];
+      }
+      return '';
+    });
+  }
+
+  text = text.join("\n");
+  
+  var dataBf = Buffer.from(text);
   if (savePath) {
-    fs.writeFile(path.join(__dirname, savePath), data, (err) => {
+    fs.writeFile(path.join(__dirname, savePath), dataBf, (err) => {
       if (err) throw err;
       console.log('文件已被保存');
     });

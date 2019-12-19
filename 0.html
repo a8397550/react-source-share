@@ -5,34 +5,43 @@
      <title>react</title>
    </head>
    <body> 
-    <div id="root">
-
-    </div>
-    <script>
-        // react-dom
-        // React.createClass()
+    <div id="root" style="white-space: pre;">
+        // react react-dom
+        // React.createElement()
+        // ReactDOM.render(reactElement, el)
         // setState()
+
+        // 初始化
+        // constructor
         // static getDerivedStateFromProps(nextProps, prevState)
         // render
         // componentDidMount()
+
+        // 变更
         // static getDerivedStateFromProps(nextProps, prevState)
         // shouldComponentUpdate(nextProps, nextState)
-        // getSnapshotBeforeUpdate
         // render
+        // getSnapshotBeforeUpdate
         // componentDidUpdate
         
+        // 异常
         // componentDidCatch
         
+        // 销毁
         // componentWillUnMount
 
+        // 原型链
         // __proto__
-        // prototype
-        // constructor
+        // prototype fn.prototype 返回 构造函数的原型对象
+        // constructor fn.constructor 返回 构造函数的constructor对象
 
-        // 构造函数实例 new 一个实例的时候，这个实例可以使用那些属性和方法，
-        // 构造函数 this ，prototype
-        // function A(); A.fn = () => {}
-        // 构造函数原型对象 构造函数原型对象的构造函数原型对象
+        // prototype.constructor 返回构造函数本身
+        // constructor.prototype 返回构造函数的原型对象
+        // 还可以通过 Object.getPrototypeOf,Object.setPrototypeOf的方法 获取/设置 构造函数原型对象，
+
+        // #构造函数实例 new 一个实例的时候，这个实例可以使用那些属性和方法，this prototype
+        // #构造函数 function A(); A.fn = () => {}
+        // #构造函数原型对象 -> 构造函数原型对象的构造函数原型对象
 
 
         /*
@@ -58,27 +67,28 @@
 
         /* 16.3以前的oldProps与oldState与newProps与newState比较
             componentWillReviceProps(nextProps) {
-                if (this.props.value !nextProps.value {
+                if (this.props.value !== nextProps.value) {
                     this.valueState = true; // 这个状态值可以应用在其他得方法里
                 } else {
                     this.valueState = false;
                 }
             }
             shouldComponentUpdate(nextProps, nextState) {
-                if (this.props.value !nextProps.value {
+                if (this.props.value !== nextProps.value) {
                     this.propsState = true; // 这个状态值可以应用在其他得方法里
                 } else {
                     this.propsState = false;
                 }
-                if (this.state.value !nextProps.value {
+                if (this.state.value !== nextState.value) {
                     this.stateState = true; // 这个状态值可以应用在其他得方法里
                 } else {
                     this.stateState = false;
                 }
+
+                return this.propsState || this.stateState;
             }
         */
-    
-    </script>
+    </div>
     <script src="./react.js"></script>
     <script src="./react-dom.js"></script>
    </body>

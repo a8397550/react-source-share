@@ -1,0 +1,170 @@
+<!-- /dist/index.html -->
+<!doctype html>
+<html>
+
+<head>
+    <title>react</title>
+    <script src="./react.js"></script>
+    <script src="./react-dom.js"></script>
+</head>
+
+<body>
+    <div id="root">
+
+    </div>
+    <script>
+        debugger;
+        var Son = React.createElement('div', {
+            children: '888',
+            componentDidMount: function() {
+                // 这玩意不会被执行，不是生命周期，会提示Warning, 
+                // 只有React.createElement(fn:function, {});的react元素才有生命周期
+            }
+        })
+
+        var Son2 = (function (Component) {
+            
+            Mod.prototype = Object.create(Component.prototype);
+            Mod.prototype.constructor = Mod;
+            Mod.__proto__ = Component;
+
+            function Mod(props) {
+                var _this;
+                _this = Component.call(this, props) || this;
+                _this.state = {
+                    name: 'CC'
+                };
+
+                _this.componentDidCatch = function (error, info) {
+                    console.log('Son2 componentDidCatch', arguments)
+                }
+
+                return _this; 
+            }
+
+            Mod.prototype.render = function () {
+               
+
+                const self = this;
+                console.log(self.state.name);
+
+                if (self.state.name !== 'CC') {
+                    a.a = 1;
+                }
+
+                return React.createElement(
+                    'div',
+                    {
+                        children: "CC",
+                        key: 'Parent',
+                        id: 'Parent',
+                        onClick: () => {
+                            self.setState({
+                                name: 'Parent',
+                            })
+                        }
+                    }
+                );
+            }
+            return Mod;
+        }(React.Component))
+
+
+        var Parent = (function (Component) {
+            
+            Mod.prototype = Object.create(Component.prototype);
+            Mod.prototype.constructor = Mod;
+            Mod.__proto__ = Component;
+
+            function Mod(props) {
+                var _this;
+                _this = Component.call(this, props) || this;
+                _this.state = {
+                    name: 'TestMod',
+                    errorFlag: false,
+                };
+
+                _this.componentDidMount = function () {
+                    // 没参数
+                    console.log('componentDidMount', arguments)
+                }
+
+                _this.shouldComponentUpdate = function () {
+                    // 接受两个参数nextProps,nextState
+                    console.log('shouldComponentUpdate', arguments)
+                    return true;
+                }
+
+                _this.getSnapshotBeforeUpdate = function () {
+                    // 接受2个参数，return的值作为componentDidUpdate的第三个参数
+                    console.log('getSnapShotBeforeUpdate', arguments)
+                    return { a: 1};
+                }
+
+                _this.componentDidUpdate = function () {
+                    // 接受3个参数，prevProps，prevState
+                    console.log('componentDidUpdate', arguments)
+                }
+
+                _this.componentDidCatch = function (error, info) {
+                    // 子组件的render发生异常，才会被执行的生命周期
+                    console.log('Parent componentDidCatch', arguments)
+                    _this.setState({
+                        errorFlag: true,
+                    })
+                }
+
+                return _this; 
+            }
+
+            var count = 0;
+            
+            Mod.getDerivedStateFromProps = function () {
+                if (count === 0) {
+                    console.log('初始化 getDerivedStateFromProps')
+                } else {
+                    console.log('变更期 getDerivedStateFromProps')
+                }
+                return null;
+            }
+
+            Mod.prototype.render = function () {
+               
+            
+                
+                
+                if (count === 0) {
+                    console.log("初始化 render")
+                    count = 1;
+                } else {
+                    console.log("变更起 render")
+                }
+                
+                const self = this;
+                var errorFlag  = this.state.errorFlag;
+                
+
+                return React.createElement(
+                    'div',
+                    {
+                        children: errorFlag ? "发生了错误" : [self.state.name, Son, React.createElement(Son2, null)],
+                        key: 'Parent',
+                        id: 'Parent',
+                        onClick: () => {
+                            self.setState({
+                                name: 'Parent',
+                            })
+                        }
+                    }
+                );
+            }
+            return Mod;
+        }(React.Component))
+
+        ReactDOM.render(React.createElement(Parent, null), document.getElementById('root'))
+        // ReactDOM.render(Son, document.getElementById('root'))
+    </script>
+
+</body>
+
+</html>
