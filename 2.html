@@ -22,7 +22,31 @@
             }
         })
 
+        var div = React.createElement('div', {
+            key: 'div',
+            ref: 'div',
+            componentDidMount: function() {
+                // 这玩意不会被执行，不是生命周期，会提示Warning, 
+                // 只有React.createElement(fn:function, {});的react元素才有生命周期
+            }
+        },
+        Son, Son, Son, Son
+        )
+
         var Son2 = (function (Component) {
+            /*
+            Component.prototype如下
+
+            isMounted: (...)
+            replaceState: (...)
+            isReactComponent: {}
+            setState: ƒ (partialState, callback)
+            forceUpdate: ƒ (callback)
+            constructor: ƒ Component(props, context, updater)
+            get isMounted: ƒ ()
+            get replaceState: ƒ ()
+            
+            */
             
             Mod.prototype = Object.create(Component.prototype);
             Mod.prototype.constructor = Mod;
@@ -36,6 +60,7 @@
                 };
 
                 _this.componentDidCatch = function (error, info) {
+                    // 当自身发生异常时，是不会执行此声明周期的
                     console.log('Son2 componentDidCatch', arguments)
                 }
 
@@ -161,7 +186,9 @@
             return Mod;
         }(React.Component))
 
-        ReactDOM.render(React.createElement(Parent, null), document.getElementById('root'))
+        var reactElement = React.createElement(Parent, null);
+
+        ReactDOM.render(reactElement, document.getElementById('root'))
         // ReactDOM.render(Son, document.getElementById('root'))
     </script>
 

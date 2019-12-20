@@ -13083,6 +13083,7 @@
             }
           }
 
+          debugger;
           var instance = new ctor(props, context);
           var state = workInProgress.memoizedState = instance.state !== null && instance.state !== undefined ? instance.state : null;
           adoptClassInstance(workInProgress, instance);
@@ -24274,6 +24275,7 @@
             return legacyRenderSubtreeIntoContainer(null, element, container, true, callback);
           },
           render: function (element, container, callback) {
+            debugger;
             (function () {
               if (!isValidContainer(container)) {
                 {

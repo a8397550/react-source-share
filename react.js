@@ -367,6 +367,7 @@
    * @param {*} updater 
    */
   function Component(props, context, updater) {
+    debugger;
     this.props = props;
     this.context = context;
     // 如果一个组件有字符串引用，我们稍后将分配一个不同的对象。
@@ -795,37 +796,35 @@
     };
 
     {
-      // The validation flag is currently mutative. We put it on
-      // an external backing store so that we can freeze the whole object.
-      // This can be replaced with a WeakMap once they are implemented in
-      // commonly used development environments.
+      // 设置一个react.element的仓库
       element._store = {};
 
-      // To make comparing ReactElements easier for testing purposes, we make
-      // the validation flag non-enumerable (where possible, which should
-      // include every environment we run tests in), so the test framework
-      // ignores it.
+      // 属性描述符号 
+      // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty
+      // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties
+
+      // 设置属性描述符
       Object.defineProperty(element._store, 'validated', {
         configurable: false,
         enumerable: false,
         writable: true,
         value: false
       });
-      // self and source are DEV only properties.
+      // 设置属性描述符
       Object.defineProperty(element, '_self', {
         configurable: false,
         enumerable: false,
         writable: false,
         value: self
       });
-      // Two elements created in two different places should be considered
-      // equal for testing purposes and therefore we hide it from enumeration.
+      // 设置属性描述符号
       Object.defineProperty(element, '_source', {
         configurable: false,
         enumerable: false,
         writable: false,
         value: source
       });
+      // 冻结一个对象，冻结的对象不允许被修改
       if (Object.freeze) {
         Object.freeze(element.props);
         Object.freeze(element);
@@ -857,6 +856,14 @@
 
     // Remaining properties are added to a new props object
     for (propName in config) {
+      /* 
+        var RESERVED_PROPS = {
+          key: true,
+          ref: true,
+          __self: true,
+          __source: true
+        };
+      */
       if (hasOwnProperty$1.call(config, propName) && !RESERVED_PROPS.hasOwnProperty(propName)) {
         props[propName] = config[propName];
       }
@@ -1589,10 +1596,27 @@
   }
 
   function isValidElementType(type) {
-    return typeof type === 'string' || typeof type === 'function' ||
-      // Note: its typeof might be other than 'symbol' or 'number' if it's a polyfill.
-      type === REACT_FRAGMENT_TYPE || type === REACT_CONCURRENT_MODE_TYPE || type === REACT_PROFILER_TYPE || type === REACT_STRICT_MODE_TYPE || type === REACT_SUSPENSE_TYPE || type === REACT_SUSPENSE_LIST_TYPE || typeof type === 'object' && type !== null && (type.$$typeof === REACT_LAZY_TYPE || type.$$typeof === REACT_MEMO_TYPE || type.$$typeof === REACT_PROVIDER_TYPE || type.$$typeof === REACT_CONTEXT_TYPE || type.$$typeof === REACT_FORWARD_REF_TYPE || type.$$typeof === REACT_FUNDAMENTAL_TYPE || type.$$typeof === REACT_RESPONDER_TYPE);
-  }
+    return typeof type === 'string'   || 
+      		 typeof type === 'function' ||
+      		 type === REACT_FRAGMENT_TYPE || 
+           type === REACT_CONCURRENT_MODE_TYPE || 
+           type === REACT_PROFILER_TYPE || 
+           type === REACT_STRICT_MODE_TYPE || 
+           type === REACT_SUSPENSE_TYPE || 
+           type === REACT_SUSPENSE_LIST_TYPE || 
+      
+           typeof type === 'object' &&
+      
+           type !== null && 
+      
+          (type.$$typeof === REACT_LAZY_TYPE || 
+           type.$$typeof === REACT_MEMO_TYPE || 
+           type.$$typeof === REACT_PROVIDER_TYPE ||
+           type.$$typeof === REACT_CONTEXT_TYPE || 
+           type.$$typeof === REACT_FORWARD_REF_TYPE || 
+           type.$$typeof === REACT_FUNDAMENTAL_TYPE || 
+           type.$$typeof === REACT_RESPONDER_TYPE);
+}
 
   function memo(type, compare) {
     {
@@ -2128,26 +2152,23 @@
 
     var element = createElement.apply(this, arguments);
 
-    // The result can be nullish if a mock or a custom function is used.
-    // TODO: Drop this when these are no longer allowed as the type argument.
+    // return null的情况
     if (element == null) {
       return element;
     }
 
-    // Skip key warning if the type isn't valid since our key validation logic
-    // doesn't expect a non-string/function type and can throw confusing errors.
-    // We don't want exception behavior to differ between dev and prod.
-    // (Rendering will throw with a helpful message and as soon as the type is
-    // fixed, the key warnings will appear.)
+    // 如果agrument.length长度为3的话执行
     if (validType) {
       for (var i = 2; i < arguments.length; i++) {
         validateChildKeys(arguments[i], type);
       }
     }
 
+    // 如果节点的类型是fragment, 这种节点比较特殊,它是这样的<></>
     if (type === REACT_FRAGMENT_TYPE) {
       validateFragmentProps(element);
     } else {
+      // 验证你是一个 一个普通HTMLElement元素，还是一个class元素
       validatePropTypes(element);
     }
 
