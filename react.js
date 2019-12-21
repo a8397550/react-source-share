@@ -9,7 +9,7 @@
       (global.React = factory());
 }(this, (function () {
   'use strict';
-
+  debugger;
   /**
    * @description React的版本号
    */
@@ -46,7 +46,7 @@
    * @description  Symbol.for('react.context') React.context组件标识
    */
   var REACT_CONTEXT_TYPE = hasSymbol ? Symbol.for('react.context') : 0xeace;
-   
+
 
   var REACT_CONCURRENT_MODE_TYPE = hasSymbol ? Symbol.for('react.concurrent_mode') : 0xeacf;
   var REACT_FORWARD_REF_TYPE = hasSymbol ? Symbol.for('react.forward_ref') : 0xead0;
@@ -62,7 +62,7 @@
    * @description 如果Symbol函数存在，就将如参的maybeIterable[Symbol.iterator]方法返回
    * @param {*} maybeIterable 
    */
-  function getIteratorFn(maybeIterable) {
+  function getIteratorFn (maybeIterable) {
     if (maybeIterable === null || typeof maybeIterable !== 'object') {
       return null;
     }
@@ -94,7 +94,7 @@
    * @description 首先判断有没有Object.assing方法如果没有return false
    * @description 检测旧V8版本中的错误属性枚举顺序。
    */
-  function shouldUseNative() {
+  function shouldUseNative () {
     try {
       if (!Object.assign) { // 首先判断有没有此方法，如果没有直接return false
         return false;
@@ -147,7 +147,7 @@
       if (val === null || val === undefined) {
         throw new TypeError('Object.assign cannot be called with null or undefined');
       }
-  
+
       return Object(val);
     }
     var to = toObject(target); // 有意思的点，这里将值转换为对象进行处理了
@@ -175,19 +175,19 @@
     return to;
   };
 
-  
+
   /**
    * @description 接收一个Error对象并给此对象的name赋值, error.name = 'Invariant Violation';在返回这个Error对象
    * @param {*} error 
    */
-  function ReactError(error) {
+  function ReactError (error) {
     error.name = 'Invariant Violation';
     return error;
   }
 
-  var a = (function(error){
+  var a = (function (error) {
     error.name = 'Invariant Violation';
-      return error;
+    return error;
   })(new Error);
 
   /*
@@ -320,7 +320,7 @@
    * @param {*} publicInstance 
    * @param {*} callerName 
    */
-  function warnNoop(publicInstance, callerName) {
+  function warnNoop (publicInstance, callerName) {
     {
       var _constructor = publicInstance.constructor;
       var componentName = _constructor && (_constructor.displayName || _constructor.name) || 'ReactClass';
@@ -366,7 +366,7 @@
    * @param {*} context 
    * @param {*} updater 
    */
-  function Component(props, context, updater) {
+  function Component (props, context, updater) {
     debugger;
     this.props = props;
     this.context = context;
@@ -393,27 +393,15 @@
   };
 
   /**
-   * Forces an update. This should only be invoked when it is known with
-   * certainty that we are **not** in a DOM transaction.
-   *
-   * You may want to call this when you know that some deeper aspect of the
-   * component's state has changed but `setState` was not called.
-   *
-   * This will not invoke `shouldComponentUpdate`, but it will invoke
-   * `componentWillUpdate` and `componentDidUpdate`.
-   *
-   * @param {?function} callback Called after update is complete.
-   * @final
-   * @protected
+   *  @description forceUpdate方法
    */
   Component.prototype.forceUpdate = function (callback) {
     this.updater.enqueueForceUpdate(this, callback, 'forceUpdate');
   };
 
   /**
-   * Deprecated APIs. These APIs used to exist on classic React classes but since
-   * we would like to deprecate them, we're not going to move them over to this
-   * modern base class. Instead, we define a getter that warns if it's accessed.
+   * 为Component.prototype 设置两个get方法 isMounted，replaceState
+   * Component.prototype的isMounted，replaceState默认值为undefined
    */
   {
     var deprecatedAPIs = {
@@ -435,7 +423,7 @@
     }
   }
 
-  function ComponentDummy() { }
+  function ComponentDummy () { }
   ComponentDummy.prototype = Component.prototype;
 
   /**
@@ -444,24 +432,26 @@
    * @param {*} context 
    * @param {*} updater 
    */
-  function PureComponent(props, context, updater) {
+  function PureComponent (props, context, updater) {
     this.props = props;
     this.context = context;
-    // If a component has string refs, we will assign a different object later.
     this.refs = emptyObject;
     this.updater = updater || ReactNoopUpdateQueue;
   }
 
+  /**
+   * @description PureComponent extends Component.prototype
+   */
   var pureComponentPrototype = PureComponent.prototype = new ComponentDummy();
   pureComponentPrototype.constructor = PureComponent;
-  // Avoid an extra prototype jump for these methods.
+
   objectAssign(pureComponentPrototype, Component.prototype);
   pureComponentPrototype.isPureReactComponent = true;
 
   /**
    * @description creataRef 创建一个占位对象，并将它密封Object.seal({current: null});然后返回这个对象；
   */
-  function createRef() {
+  function createRef () {
     var refObject = {
       current: null
     };
@@ -535,11 +525,11 @@
   var Resolved = 1;
 
 
-  function refineResolvedLazyComponent(lazyComponent) {
+  function refineResolvedLazyComponent (lazyComponent) {
     return lazyComponent._status === Resolved ? lazyComponent._result : null;
   }
 
-  function getWrappedName(outerType, innerType, wrapperName) {
+  function getWrappedName (outerType, innerType, wrapperName) {
     var functionName = innerType.displayName || innerType.name || '';
     return outerType.displayName || (functionName !== '' ? wrapperName + '(' + functionName + ')' : wrapperName);
   }
@@ -548,7 +538,7 @@
    * @description 返回组件的名称，通过标示返回react私有组件名称string值
    * @return {string} 返回一个string值
   */
-  function getComponentName(type) {
+  function getComponentName (type) {
     if (type == null) {
       // Host root, text node or just invalid type.
       return null;
@@ -606,7 +596,7 @@
 
   var currentlyValidatingElement = null;
 
-  function setCurrentlyValidatingElement(element) {
+  function setCurrentlyValidatingElement (element) {
     {
       currentlyValidatingElement = element;
     }
@@ -712,7 +702,7 @@
    * @description 如果它不是一个访问描述符合，并且不等于undefined返回true
    * @param {*} config 
    */
-  function hasValidRef(config) {
+  function hasValidRef (config) {
     {
       if (hasOwnProperty$1.call(config, 'ref')) {
         var getter = Object.getOwnPropertyDescriptor(config, 'ref').get;
@@ -729,7 +719,7 @@
    * @description 如果它不是一个访问描述符合，并且不等于undefined返回true
    * @param {*} config 
    */
-  function hasValidKey(config) {
+  function hasValidKey (config) {
     {
       if (hasOwnProperty$1.call(config, 'key')) {
         var getter = Object.getOwnPropertyDescriptor(config, 'key').get;
@@ -741,7 +731,7 @@
     return config.key !== undefined;
   }
 
-  function defineKeyPropWarningGetter(props, displayName) {
+  function defineKeyPropWarningGetter (props, displayName) {
     var warnAboutAccessingKey = function () {
       if (!specialPropKeyWarningShown) {
         specialPropKeyWarningShown = true;
@@ -755,7 +745,7 @@
     });
   }
 
-  function defineRefPropWarningGetter(props, displayName) {
+  function defineRefPropWarningGetter (props, displayName) {
     var warnAboutAccessingRef = function () {
       if (!specialPropRefWarningShown) {
         specialPropRefWarningShown = true;
@@ -837,7 +827,7 @@
   /**
    * @description 此方法返回和React.creataElement一样
   */
-  function jsxDEV(type, config, maybeKey, source, self) {
+  function jsxDEV (type, config, maybeKey, source, self) {
     var propName = void 0;
 
     // Reserved names are extracted
@@ -904,7 +894,7 @@
    * @param {*} config props与ref与key的设置
    * @param {*} children 子元素，可以是数组，也可以是单个元素
    */
-  function createElement(type, config, children) {
+  function createElement (type, config, children) {
     var propName = void 0;
 
     // 设置props
@@ -926,7 +916,7 @@
 
       self = config.__self === undefined ? null : config.__self;
       source = config.__source === undefined ? null : config.__source;
-      
+
       for (propName in config) {
         // 过滤ref，key，__self,__source
         const bool = !RESERVED_PROPS.hasOwnProperty(propName);
@@ -984,7 +974,7 @@
    * @param {*} oldElement 
    * @param {*} newKey 
    */
-  function cloneAndReplaceKey(oldElement, newKey) {
+  function cloneAndReplaceKey (oldElement, newKey) {
     var newElement = ReactElement(oldElement.type, newKey, oldElement.ref, oldElement._self, oldElement._source, oldElement._owner, oldElement.props);
 
     return newElement;
@@ -996,7 +986,7 @@
    * @param {*} config 
    * @param {*} children 
    */
-  function cloneElement(element, config, children) {
+  function cloneElement (element, config, children) {
     (function () {
       if (!!(element === null || element === undefined)) {
         {
@@ -1073,7 +1063,7 @@
    * @return {boolean} True if `object` is a ReactElement.
    * @final
    */
-  function isValidElement(object) {
+  function isValidElement (object) {
     return typeof object === 'object' && object !== null && object.$$typeof === REACT_ELEMENT_TYPE;
   }
 
@@ -1086,7 +1076,7 @@
    * @param {string} key to be escaped.
    * @return {string} the escaped key.
    */
-  function escape(key) {
+  function escape (key) {
     var escapeRegex = /[=:]/g;
     var escaperLookup = {
       '=': '=0',
@@ -1107,13 +1097,13 @@
   var didWarnAboutMaps = false;
 
   var userProvidedKeyEscapeRegex = /\/+/g;
-  function escapeUserProvidedKey(text) {
+  function escapeUserProvidedKey (text) {
     return ('' + text).replace(userProvidedKeyEscapeRegex, '$&/');
   }
 
   var POOL_SIZE = 10;
   var traverseContextPool = [];
-  function getPooledTraverseContext(mapResult, keyPrefix, mapFunction, mapContext) {
+  function getPooledTraverseContext (mapResult, keyPrefix, mapFunction, mapContext) {
     if (traverseContextPool.length) {
       var traverseContext = traverseContextPool.pop();
       traverseContext.result = mapResult;
@@ -1133,7 +1123,7 @@
     }
   }
 
-  function releaseTraverseContext(traverseContext) {
+  function releaseTraverseContext (traverseContext) {
     traverseContext.result = null;
     traverseContext.keyPrefix = null;
     traverseContext.func = null;
@@ -1152,7 +1142,7 @@
    * process.
    * @return {!number} The number of children in this subtree.
    */
-  function traverseAllChildrenImpl(children, nameSoFar, callback, traverseContext) {
+  function traverseAllChildrenImpl (children, nameSoFar, callback, traverseContext) {
     var type = typeof children;
 
     if (type === 'undefined' || type === 'boolean') {
@@ -1252,7 +1242,7 @@
    * @param {?*} traverseContext Context for traversal.
    * @return {!number} The number of children in this subtree.
    */
-  function traverseAllChildren(children, callback, traverseContext) {
+  function traverseAllChildren (children, callback, traverseContext) {
     if (children == null) {
       return 0;
     }
@@ -1267,7 +1257,7 @@
    * @param {number} index Index that is used if a manual key is not provided.
    * @return {string}
    */
-  function getComponentKey(component, index) {
+  function getComponentKey (component, index) {
     // Do some typechecking here since we call this blindly. We want to ensure
     // that we don't block potential future ES APIs.
     if (typeof component === 'object' && component !== null && component.key != null) {
@@ -1278,7 +1268,7 @@
     return index.toString(36);
   }
 
-  function forEachSingleChild(bookKeeping, child, name) {
+  function forEachSingleChild (bookKeeping, child, name) {
     var func = bookKeeping.func,
       context = bookKeeping.context;
 
@@ -1297,7 +1287,7 @@
    * @param {function(*, int)} forEachFunc
    * @param {*} forEachContext Context for forEachContext.
    */
-  function forEachChildren(children, forEachFunc, forEachContext) {
+  function forEachChildren (children, forEachFunc, forEachContext) {
     if (children == null) {
       return children;
     }
@@ -1306,7 +1296,7 @@
     releaseTraverseContext(traverseContext);
   }
 
-  function mapSingleChildIntoContext(bookKeeping, child, childKey) {
+  function mapSingleChildIntoContext (bookKeeping, child, childKey) {
     var result = bookKeeping.result,
       keyPrefix = bookKeeping.keyPrefix,
       func = bookKeeping.func,
@@ -1329,7 +1319,7 @@
     }
   }
 
-  function mapIntoWithKeyPrefixInternal(children, array, prefix, func, context) {
+  function mapIntoWithKeyPrefixInternal (children, array, prefix, func, context) {
     var escapedPrefix = '';
     if (prefix != null) {
       escapedPrefix = escapeUserProvidedKey(prefix) + '/';
@@ -1339,20 +1329,8 @@
     releaseTraverseContext(traverseContext);
   }
 
-  /**
-   * Maps children that are typically specified as `props.children`.
-   *
-   * See https://reactjs.org/docs/react-api.html#reactchildrenmap
-   *
-   * The provided mapFunction(child, key, index) will be called for each
-   * leaf child.
-   *
-   * @param {?*} children Children tree container.
-   * @param {function(*, int)} func The map function.
-   * @param {*} context Context for mapFunction.
-   * @return {object} Object containing the ordered map of results.
-   */
-  function mapChildren(children, func, context) {
+
+  function mapChildren (children, func, context) {
     if (children == null) {
       return children;
     }
@@ -1370,7 +1348,7 @@
    * @param {?*} children Children tree container.
    * @return {number} The number of children.
    */
-  function countChildren(children) {
+  function countChildren (children) {
     return traverseAllChildren(children, function () {
       return null;
     }, null);
@@ -1382,7 +1360,7 @@
    *
    * See https://reactjs.org/docs/react-api.html#reactchildrentoarray
    */
-  function toArray(children) {
+  function toArray (children) {
     var result = [];
     mapIntoWithKeyPrefixInternal(children, result, null, function (child) {
       return child;
@@ -1404,7 +1382,7 @@
    * @return {ReactElement} The first and only `ReactElement` contained in the
    * structure.
    */
-  function onlyChild(children) {
+  function onlyChild (children) {
     (function () {
       if (!isValidElement(children)) {
         {
@@ -1415,7 +1393,7 @@
     return children;
   }
 
-  function createContext(defaultValue, calculateChangedBits) {
+  function createContext (defaultValue, calculateChangedBits) {
     if (calculateChangedBits === undefined) {
       calculateChangedBits = null;
     } else {
@@ -1427,17 +1405,9 @@
     var context = {
       $$typeof: REACT_CONTEXT_TYPE,
       _calculateChangedBits: calculateChangedBits,
-      // As a workaround to support multiple concurrent renderers, we categorize
-      // some renderers as primary and others as secondary. We only expect
-      // there to be two concurrent renderers at most: React Native (primary) and
-      // Fabric (secondary); React DOM (primary) and React ART (secondary).
-      // Secondary renderers store their context values on separate fields.
       _currentValue: defaultValue,
       _currentValue2: defaultValue,
-      // Used to track how many concurrent renderers this context currently
-      // supports within in a single renderer. Such as parallel server rendering.
       _threadCount: 0,
-      // These are circular
       Provider: null,
       Consumer: null
     };
@@ -1451,15 +1421,11 @@
     var hasWarnedAboutUsingConsumerProvider = false;
 
     {
-      // A separate object, but proxies back to the original context object for
-      // backwards compatibility. It has a different $$typeof, so we can properly
-      // warn for the incorrect usage of Context as a Consumer.
       var Consumer = {
         $$typeof: REACT_CONTEXT_TYPE,
         _context: context,
         _calculateChangedBits: context._calculateChangedBits
       };
-      // $FlowFixMe: Flow complains about not setting a value, which is intentional here
       Object.defineProperties(Consumer, {
         Provider: {
           get: function () {
@@ -1507,7 +1473,6 @@
           }
         }
       });
-      // $FlowFixMe: Flow complains about missing properties because it doesn't understand defineProperty
       context.Consumer = Consumer;
     }
 
@@ -1519,7 +1484,7 @@
     return context;
   }
 
-  function lazy(ctor) {
+  function lazy (ctor) {
     var lazyType = {
       $$typeof: REACT_LAZY_TYPE,
       _ctor: ctor,
@@ -1572,7 +1537,7 @@
    * @description ref转发 提供给外部的方法，不被内部所调用
    * @param {*} render 
    */
-  function forwardRef(render) {
+  function forwardRef (render) {
     {
       if (render != null && render.$$typeof === REACT_MEMO_TYPE) {
         warningWithoutStack$1(false, 'forwardRef requires a render function but received a `memo` ' + 'component. Instead of forwardRef(memo(...)), use ' + 'memo(forwardRef(...)).');
@@ -1595,30 +1560,30 @@
     };
   }
 
-  function isValidElementType(type) {
-    return typeof type === 'string'   || 
-      		 typeof type === 'function' ||
-      		 type === REACT_FRAGMENT_TYPE || 
-           type === REACT_CONCURRENT_MODE_TYPE || 
-           type === REACT_PROFILER_TYPE || 
-           type === REACT_STRICT_MODE_TYPE || 
-           type === REACT_SUSPENSE_TYPE || 
-           type === REACT_SUSPENSE_LIST_TYPE || 
-      
-           typeof type === 'object' &&
-      
-           type !== null && 
-      
-          (type.$$typeof === REACT_LAZY_TYPE || 
-           type.$$typeof === REACT_MEMO_TYPE || 
-           type.$$typeof === REACT_PROVIDER_TYPE ||
-           type.$$typeof === REACT_CONTEXT_TYPE || 
-           type.$$typeof === REACT_FORWARD_REF_TYPE || 
-           type.$$typeof === REACT_FUNDAMENTAL_TYPE || 
-           type.$$typeof === REACT_RESPONDER_TYPE);
-}
+  function isValidElementType (type) {
+    return typeof type === 'string' ||
+      typeof type === 'function' ||
+      type === REACT_FRAGMENT_TYPE ||
+      type === REACT_CONCURRENT_MODE_TYPE ||
+      type === REACT_PROFILER_TYPE ||
+      type === REACT_STRICT_MODE_TYPE ||
+      type === REACT_SUSPENSE_TYPE ||
+      type === REACT_SUSPENSE_LIST_TYPE ||
 
-  function memo(type, compare) {
+      typeof type === 'object' &&
+
+      type !== null &&
+
+      (type.$$typeof === REACT_LAZY_TYPE ||
+        type.$$typeof === REACT_MEMO_TYPE ||
+        type.$$typeof === REACT_PROVIDER_TYPE ||
+        type.$$typeof === REACT_CONTEXT_TYPE ||
+        type.$$typeof === REACT_FORWARD_REF_TYPE ||
+        type.$$typeof === REACT_FUNDAMENTAL_TYPE ||
+        type.$$typeof === REACT_RESPONDER_TYPE);
+  }
+
+  function memo (type, compare) {
     {
       if (!isValidElementType(type)) {
         warningWithoutStack$1(false, 'memo: The first argument must be a component. Instead ' + 'received: %s', type === null ? 'null' : typeof type);
@@ -1631,7 +1596,7 @@
     };
   }
 
-  function resolveDispatcher() {
+  function resolveDispatcher () {
     var dispatcher = ReactCurrentDispatcher.current;
     (function () {
       if (!(dispatcher !== null)) {
@@ -1643,7 +1608,7 @@
     return dispatcher;
   }
 
-  function useContext(Context, unstable_observedBits) {
+  function useContext (Context, unstable_observedBits) {
     var dispatcher = resolveDispatcher();
     {
       !(unstable_observedBits === undefined) ? warning$1(false, 'useContext() second argument is reserved for future ' + 'use in React. Passing it is not supported. ' + 'You passed: %s.%s', unstable_observedBits, typeof unstable_observedBits === 'number' && Array.isArray(arguments[2]) ? '\n\nDid you call array.map(useContext)? ' + 'Calling Hooks inside a loop is not supported. ' + 'Learn more at https://fb.me/rules-of-hooks' : '') : void 0;
@@ -1663,47 +1628,47 @@
     return dispatcher.useContext(Context, unstable_observedBits);
   }
 
-  function useState(initialState) {
+  function useState (initialState) {
     var dispatcher = resolveDispatcher();
     return dispatcher.useState(initialState);
   }
 
-  function useReducer(reducer, initialArg, init) {
+  function useReducer (reducer, initialArg, init) {
     var dispatcher = resolveDispatcher();
     return dispatcher.useReducer(reducer, initialArg, init);
   }
 
-  function useRef(initialValue) {
+  function useRef (initialValue) {
     var dispatcher = resolveDispatcher();
     return dispatcher.useRef(initialValue);
   }
 
-  function useEffect(create, inputs) {
+  function useEffect (create, inputs) {
     var dispatcher = resolveDispatcher();
     return dispatcher.useEffect(create, inputs);
   }
 
-  function useLayoutEffect(create, inputs) {
+  function useLayoutEffect (create, inputs) {
     var dispatcher = resolveDispatcher();
     return dispatcher.useLayoutEffect(create, inputs);
   }
 
-  function useCallback(callback, inputs) {
+  function useCallback (callback, inputs) {
     var dispatcher = resolveDispatcher();
     return dispatcher.useCallback(callback, inputs);
   }
 
-  function useMemo(create, inputs) {
+  function useMemo (create, inputs) {
     var dispatcher = resolveDispatcher();
     return dispatcher.useMemo(create, inputs);
   }
 
-  function useImperativeHandle(ref, create, inputs) {
+  function useImperativeHandle (ref, create, inputs) {
     var dispatcher = resolveDispatcher();
     return dispatcher.useImperativeHandle(ref, create, inputs);
   }
 
-  function useDebugValue(value, formatterFn) {
+  function useDebugValue (value, formatterFn) {
     {
       var dispatcher = resolveDispatcher();
       return dispatcher.useDebugValue(value, formatterFn);
@@ -1712,7 +1677,7 @@
 
   var emptyObject$1 = {};
 
-  function useResponder(responder, listenerProps) {
+  function useResponder (responder, listenerProps) {
     var dispatcher = resolveDispatcher();
     {
       if (responder == null || responder.$$typeof !== REACT_RESPONDER_TYPE) {
@@ -1724,7 +1689,7 @@
   }
 
   // Within the scope of the callback, mark all updates as being allowed to suspend.
-  function withSuspenseConfig(scope, config) {
+  function withSuspenseConfig (scope, config) {
     var previousConfig = ReactCurrentBatchConfig.suspense;
     ReactCurrentBatchConfig.suspense = config === undefined ? null : config;
     try {
@@ -1787,7 +1752,7 @@
    * @param {?Function} getStack Returns the component stack.
    * @private
    */
-  function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
+  function checkPropTypes (typeSpecs, values, location, componentName, getStack) {
     {
       for (var typeSpecName in typeSpecs) {
         if (typeSpecs.hasOwnProperty(typeSpecName)) {
@@ -1852,7 +1817,7 @@
     propTypesMisspellWarningShown = false;
   }
 
-  function getDeclarationErrorAddendum() {
+  function getDeclarationErrorAddendum () {
     if (ReactCurrentOwner.current) {
       var name = getComponentName(ReactCurrentOwner.current.type);
       if (name) {
@@ -1862,7 +1827,7 @@
     return '';
   }
 
-  function getSourceInfoErrorAddendum(source) {
+  function getSourceInfoErrorAddendum (source) {
     if (source !== undefined) {
       var fileName = source.fileName.replace(/^.*[\\\/]/, '');
       var lineNumber = source.lineNumber;
@@ -1871,7 +1836,7 @@
     return '';
   }
 
-  function getSourceInfoErrorAddendumForProps(elementProps) {
+  function getSourceInfoErrorAddendumForProps (elementProps) {
     if (elementProps !== null && elementProps !== undefined) {
       return getSourceInfoErrorAddendum(elementProps.__source);
     }
@@ -1885,7 +1850,7 @@
    */
   var ownerHasKeyUseWarning = {};
 
-  function getCurrentComponentErrorInfo(parentType) {
+  function getCurrentComponentErrorInfo (parentType) {
     var info = getDeclarationErrorAddendum();
 
     if (!info) {
@@ -1908,7 +1873,7 @@
    * @param {ReactElement} element Element that requires a key.
    * @param {*} parentType element's parent's type.
    */
-  function validateExplicitKey(element, parentType) {
+  function validateExplicitKey (element, parentType) {
     if (!element._store || element._store.validated || element.key != null) {
       return;
     }
@@ -1945,7 +1910,7 @@
    * @param {ReactNode} node Statically passed child of any type.
    * @param {*} parentType node's parent's type.
    */
-  function validateChildKeys(node, parentType) {
+  function validateChildKeys (node, parentType) {
     if (typeof node !== 'object') {
       return;
     }
@@ -1985,7 +1950,7 @@
    *
    * @param {ReactElement} element
    */
-  function validatePropTypes(element) {
+  function validatePropTypes (element) {
     var type = element.type;
     if (type === null || type === undefined || typeof type === 'string') {
       return;
@@ -2019,7 +1984,7 @@
    * Given a fragment, validate that it can only be provided with fragment props
    * @param {ReactElement} fragment
    */
-  function validateFragmentProps(fragment) {
+  function validateFragmentProps (fragment) {
     setCurrentlyValidatingElement(fragment);
 
     var keys = Object.keys(fragment.props);
@@ -2038,7 +2003,7 @@
     setCurrentlyValidatingElement(null);
   }
 
-  function jsxWithValidation(type, props, key, isStaticChildren, source, self) {
+  function jsxWithValidation (type, props, key, isStaticChildren, source, self) {
     var validType = isValidElementType(type);
 
     // We warn in this case but don't throw. We expect the element creation to
@@ -2110,15 +2075,15 @@
     return element;
   }
 
-  function jsxWithValidationStatic(type, props, key) {
+  function jsxWithValidationStatic (type, props, key) {
     return jsxWithValidation(type, props, key, true);
   }
 
-  function jsxWithValidationDynamic(type, props, key) {
+  function jsxWithValidationDynamic (type, props, key) {
     return jsxWithValidation(type, props, key, false);
   }
 
-  function createElementWithValidation(type, props, children) {
+  function createElementWithValidation (type, props, children) {
     var validType = isValidElementType(type);
 
 
@@ -2175,7 +2140,7 @@
     return element;
   }
 
-  function createFactoryWithValidation(type) {
+  function createFactoryWithValidation (type) {
     var validatedFactory = createElementWithValidation.bind(null, type);
     validatedFactory.type = type;
     // Legacy hook: remove it
@@ -2195,7 +2160,7 @@
     return validatedFactory;
   }
 
-  function cloneElementWithValidation(element, props, children) {
+  function cloneElementWithValidation (element, props, children) {
     var newElement = cloneElement.apply(this, arguments);
     for (var i = 2; i < arguments.length; i++) {
       validateChildKeys(arguments[i], newElement.type);
@@ -2535,7 +2500,7 @@
           // preceding frame.
           var idleCallbackID = void 0;
           if (requestIdleCallbackBeforeFirstFrame$1) {
-            idleCallbackID = requestIdleCallback(function onIdleCallbackBeforeFirstFrame() {
+            idleCallbackID = requestIdleCallback(function onIdleCallbackBeforeFirstFrame () {
               if (requestTimerEventBeforeFirstFrame) {
                 _clearTimeout(idleTimeoutID);
               }
@@ -2550,7 +2515,7 @@
           // prevent idle periods.
           var idleTimeoutID = void 0;
           if (requestTimerEventBeforeFirstFrame) {
-            idleTimeoutID = _setTimeout(function onTimerEventBeforeFirstFrame() {
+            idleTimeoutID = _setTimeout(function onTimerEventBeforeFirstFrame () {
               if (requestIdleCallbackBeforeFirstFrame$1) {
                 cancelIdleCallback(idleCallbackID);
               }
@@ -2613,23 +2578,23 @@
   var isHostCallbackScheduled = false;
   var isHostTimeoutScheduled = false;
 
-  function scheduler_flushTaskAtPriority_Immediate(callback, didTimeout) {
+  function scheduler_flushTaskAtPriority_Immediate (callback, didTimeout) {
     return callback(didTimeout);
   }
-  function scheduler_flushTaskAtPriority_UserBlocking(callback, didTimeout) {
+  function scheduler_flushTaskAtPriority_UserBlocking (callback, didTimeout) {
     return callback(didTimeout);
   }
-  function scheduler_flushTaskAtPriority_Normal(callback, didTimeout) {
+  function scheduler_flushTaskAtPriority_Normal (callback, didTimeout) {
     return callback(didTimeout);
   }
-  function scheduler_flushTaskAtPriority_Low(callback, didTimeout) {
+  function scheduler_flushTaskAtPriority_Low (callback, didTimeout) {
     return callback(didTimeout);
   }
-  function scheduler_flushTaskAtPriority_Idle(callback, didTimeout) {
+  function scheduler_flushTaskAtPriority_Idle (callback, didTimeout) {
     return callback(didTimeout);
   }
 
-  function flushTask(task, currentTime) {
+  function flushTask (task, currentTime) {
     // Remove the task from the list before calling the callback. That way the
     // list is in a consistent state even if the callback throws.
     var next = task.next;
@@ -2725,7 +2690,7 @@
     }
   }
 
-  function advanceTimers(currentTime) {
+  function advanceTimers (currentTime) {
     // Check for tasks that are no longer delayed and add them to the queue.
     if (firstDelayedTask !== null && firstDelayedTask.startTime <= currentTime) {
       do {
@@ -2745,7 +2710,7 @@
     }
   }
 
-  function handleTimeout(currentTime) {
+  function handleTimeout (currentTime) {
     isHostTimeoutScheduled = false;
     advanceTimers(currentTime);
 
@@ -2759,7 +2724,7 @@
     }
   }
 
-  function flushWork(hasTimeRemaining, initialTime) {
+  function flushWork (hasTimeRemaining, initialTime) {
     // Exit right away if we're currently paused
     if (enableSchedulerDebugging && isSchedulerPaused) {
       return;
@@ -2811,7 +2776,7 @@
     }
   }
 
-  function unstable_runWithPriority(priorityLevel, eventHandler) {
+  function unstable_runWithPriority (priorityLevel, eventHandler) {
     switch (priorityLevel) {
       case ImmediatePriority:
       case UserBlockingPriority:
@@ -2833,7 +2798,7 @@
     }
   }
 
-  function unstable_next(eventHandler) {
+  function unstable_next (eventHandler) {
     var priorityLevel;
     switch (currentPriorityLevel) {
       case ImmediatePriority:
@@ -2858,7 +2823,7 @@
     }
   }
 
-  function unstable_wrapCallback(callback) {
+  function unstable_wrapCallback (callback) {
     var parentPriorityLevel = currentPriorityLevel;
     return function () {
       // This is a fork of runWithPriority, inlined for performance.
@@ -2873,7 +2838,7 @@
     };
   }
 
-  function timeoutForPriorityLevel(priorityLevel) {
+  function timeoutForPriorityLevel (priorityLevel) {
     switch (priorityLevel) {
       case ImmediatePriority:
         return IMMEDIATE_PRIORITY_TIMEOUT;
@@ -2889,7 +2854,7 @@
     }
   }
 
-  function unstable_scheduleCallback(priorityLevel, callback, options) {
+  function unstable_scheduleCallback (priorityLevel, callback, options) {
     var currentTime = getCurrentTime();
 
     var startTime;
@@ -2945,7 +2910,7 @@
     return newTask;
   }
 
-  function insertScheduledTask(newTask, expirationTime) {
+  function insertScheduledTask (newTask, expirationTime) {
     // Insert the new task into the list, ordered first by its timeout, then by
     // insertion. So the new task is inserted after any other task the
     // same timeout
@@ -2980,7 +2945,7 @@
     }
   }
 
-  function insertDelayedTask(newTask, startTime) {
+  function insertDelayedTask (newTask, startTime) {
     // Insert the new task into the list, ordered by its start time.
     if (firstDelayedTask === null) {
       // This is the first task in the list.
@@ -3013,11 +2978,11 @@
     }
   }
 
-  function unstable_pauseExecution() {
+  function unstable_pauseExecution () {
     isSchedulerPaused = true;
   }
 
-  function unstable_continueExecution() {
+  function unstable_continueExecution () {
     isSchedulerPaused = false;
     if (!isHostCallbackScheduled && !isPerformingWork) {
       isHostCallbackScheduled = true;
@@ -3025,11 +2990,11 @@
     }
   }
 
-  function unstable_getFirstCallbackNode() {
+  function unstable_getFirstCallbackNode () {
     return firstTask;
   }
 
-  function unstable_cancelCallback(task) {
+  function unstable_cancelCallback (task) {
     var next = task.next;
     if (next === null) {
       // Already cancelled.
@@ -3056,11 +3021,11 @@
     task.next = task.previous = null;
   }
 
-  function unstable_getCurrentPriorityLevel() {
+  function unstable_getCurrentPriorityLevel () {
     return currentPriorityLevel;
   }
 
-  function unstable_shouldYield() {
+  function unstable_shouldYield () {
     var currentTime = getCurrentTime();
     advanceTimers(currentTime);
     return currentTask !== null && firstTask !== null && firstTask.startTime <= currentTime && firstTask.expirationTime < currentTask.expirationTime || shouldYieldToHost();
@@ -3087,8 +3052,8 @@
     unstable_continueExecution: unstable_continueExecution,
     unstable_pauseExecution: unstable_pauseExecution,
     unstable_getFirstCallbackNode: unstable_getFirstCallbackNode,
-    get unstable_now() { return getCurrentTime; },
-    get unstable_forceFrameRate() { return forceFrameRate; }
+    get unstable_now () { return getCurrentTime; },
+    get unstable_forceFrameRate () { return forceFrameRate; }
   });
 
   // Helps identify side effects in begin-phase lifecycle hooks and setState reducers:
@@ -3196,7 +3161,7 @@
     };
   }
 
-  function unstable_clear(callback) {
+  function unstable_clear (callback) {
     if (!enableSchedulerTracing) {
       return callback();
     }
@@ -3211,7 +3176,7 @@
     }
   }
 
-  function unstable_getCurrent() {
+  function unstable_getCurrent () {
     if (!enableSchedulerTracing) {
       return null;
     } else {
@@ -3219,11 +3184,11 @@
     }
   }
 
-  function unstable_getThreadID() {
+  function unstable_getThreadID () {
     return ++threadIDCounter;
   }
 
-  function unstable_trace(name, timestamp, callback) {
+  function unstable_trace (name, timestamp, callback) {
     var threadID = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : DEFAULT_THREAD_ID;
 
     if (!enableSchedulerTracing) {
@@ -3284,7 +3249,7 @@
     return returnValue;
   }
 
-  function unstable_wrap(callback) {
+  function unstable_wrap (callback) {
     var threadID = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_THREAD_ID;
 
     if (!enableSchedulerTracing) {
@@ -3306,7 +3271,7 @@
 
     var hasRun = false;
 
-    function wrapped() {
+    function wrapped () {
       var prevInteractions = interactionsRef.current;
       interactionsRef.current = wrappedInteractions;
 
@@ -3353,7 +3318,7 @@
       }
     }
 
-    wrapped.cancel = function cancel() {
+    wrapped.cancel = function cancel () {
       subscriber = subscriberRef.current;
 
       try {
@@ -3382,7 +3347,7 @@
     subscribers = new Set();
   }
 
-  function unstable_subscribe(subscriber) {
+  function unstable_subscribe (subscriber) {
     if (enableSchedulerTracing) {
       subscribers.add(subscriber);
 
@@ -3399,7 +3364,7 @@
     }
   }
 
-  function unstable_unsubscribe(subscriber) {
+  function unstable_unsubscribe (subscriber) {
     if (enableSchedulerTracing) {
       subscribers.delete(subscriber);
 
@@ -3409,7 +3374,7 @@
     }
   }
 
-  function onInteractionTraced(interaction) {
+  function onInteractionTraced (interaction) {
     var didCatchError = false;
     var caughtError = null;
 
@@ -3429,7 +3394,7 @@
     }
   }
 
-  function onInteractionScheduledWorkCompleted(interaction) {
+  function onInteractionScheduledWorkCompleted (interaction) {
     var didCatchError = false;
     var caughtError = null;
 
@@ -3449,7 +3414,7 @@
     }
   }
 
-  function onWorkScheduled(interactions, threadID) {
+  function onWorkScheduled (interactions, threadID) {
     var didCatchError = false;
     var caughtError = null;
 
@@ -3469,7 +3434,7 @@
     }
   }
 
-  function onWorkStarted(interactions, threadID) {
+  function onWorkStarted (interactions, threadID) {
     var didCatchError = false;
     var caughtError = null;
 
@@ -3489,7 +3454,7 @@
     }
   }
 
-  function onWorkStopped(interactions, threadID) {
+  function onWorkStopped (interactions, threadID) {
     var didCatchError = false;
     var caughtError = null;
 
@@ -3509,7 +3474,7 @@
     }
   }
 
-  function onWorkCanceled(interactions, threadID) {
+  function onWorkCanceled (interactions, threadID) {
     var didCatchError = false;
     var caughtError = null;
 
@@ -3532,8 +3497,8 @@
 
 
   var SchedulerTracing = Object.freeze({
-    get __interactionsRef() { return interactionsRef; },
-    get __subscriberRef() { return subscriberRef; },
+    get __interactionsRef () { return interactionsRef; },
+    get __subscriberRef () { return subscriberRef; },
     unstable_clear: unstable_clear,
     unstable_getCurrent: unstable_getCurrent,
     unstable_getThreadID: unstable_getThreadID,
@@ -3590,7 +3555,7 @@
     }
   }
 
-  function createFundamentalComponent(impl) {
+  function createFundamentalComponent (impl) {
     // We use responder as a Map key later on. When we have a bad
     // polyfill, then we can't use it as a key as the polyfill tries
     // to add a property to the object.
@@ -3607,7 +3572,7 @@
     return fundamantalComponent;
   }
 
-  function createEventResponder(displayName, responderConfig) {
+  function createEventResponder (displayName, responderConfig) {
     var getInitialState = responderConfig.getInitialState,
       onEvent = responderConfig.onEvent,
       onMount = responderConfig.onMount,
@@ -3639,20 +3604,50 @@
   }
 
   var React = {
+    /**
+     * React.Children提供了处理this.props.children的工具，this.props.children可以任何数据（组件、字符串、函数等等）。
+     * React.children有5个方法：
+     * React.Children.map()、 // React.Children.map() 返回一个数组
+     * React.Children.forEach()、 // 循环但是无返回
+     * React.Children.count()、 // 返回children的长度，如果children是string的话，会返回string的长度哦
+     * React.Children.only()、// 验证children里只有唯一的孩子并返回他。否则这个方法抛出一个错误。
+     * React.Children.toArray() // 将children转换成Array，对children排序时需要使用
+     * 通常与React.cloneElement()结合使用来操作this.props.children。
+     */
     Children: {
+      /* React.Children.map() 返回一个数组
+        function Father({children}) {
+            return(
+              <div>
+              {React.Children.map(children, (child, index) => {
+                  ...
+              })}
+              </div>    
+            )        
+        }
+
+
+        <Father>
+            hello world!
+            {() => <p>2333</p>}
+        </Father>
+      */
       map: mapChildren,
       forEach: forEachChildren,
-      count: countChildren,
+      count: countChildren, // 英[kaʊnt] 总数，计数
       toArray: toArray,
-      only: onlyChild
+      only: onlyChild // 英[ˈəʊnli] 唯一的
     },
 
     createRef: createRef,
     Component: Component,
     PureComponent: PureComponent,
-
     createContext: createContext,
     forwardRef: forwardRef,
+    createElement: createElementWithValidation,
+    cloneElement: cloneElementWithValidation,
+    createFactory: createFactoryWithValidation,
+
     lazy: lazy,
     memo: memo,
 
@@ -3673,9 +3668,7 @@
     Suspense: REACT_SUSPENSE_TYPE,
     unstable_SuspenseList: REACT_SUSPENSE_LIST_TYPE,
 
-    createElement: createElementWithValidation,
-    cloneElement: cloneElementWithValidation,
-    createFactory: createFactoryWithValidation,
+
     isValidElement: isValidElement,
 
     version: ReactVersion,

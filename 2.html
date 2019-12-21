@@ -16,7 +16,7 @@
         debugger;
         var Son = React.createElement('div', {
             children: '888',
-            componentDidMount: function() {
+            componentDidMount: function () {
                 // 这玩意不会被执行，不是生命周期，会提示Warning, 
                 // 只有React.createElement(fn:function, {});的react元素才有生命周期
             }
@@ -25,12 +25,12 @@
         var div = React.createElement('div', {
             key: 'div',
             ref: 'div',
-            componentDidMount: function() {
+            componentDidMount: function () {
                 // 这玩意不会被执行，不是生命周期，会提示Warning, 
                 // 只有React.createElement(fn:function, {});的react元素才有生命周期
             }
         },
-        Son, Son, Son, Son
+            Son, Son, Son, Son
         )
 
         var Son2 = (function (Component) {
@@ -47,7 +47,7 @@
             get replaceState: ƒ ()
             
             */
-            
+
             Mod.prototype = Object.create(Component.prototype);
             Mod.prototype.constructor = Mod;
             Mod.__proto__ = Component;
@@ -64,11 +64,11 @@
                     console.log('Son2 componentDidCatch', arguments)
                 }
 
-                return _this; 
+                return _this;
             }
 
             Mod.prototype.render = function () {
-               
+
 
                 const self = this;
                 console.log(self.state.name);
@@ -96,7 +96,7 @@
 
 
         var Parent = (function (Component) {
-            
+
             Mod.prototype = Object.create(Component.prototype);
             Mod.prototype.constructor = Mod;
             Mod.__proto__ = Component;
@@ -123,7 +123,7 @@
                 _this.getSnapshotBeforeUpdate = function () {
                     // 接受2个参数，return的值作为componentDidUpdate的第三个参数
                     console.log('getSnapShotBeforeUpdate', arguments)
-                    return { a: 1};
+                    return { a: 1 };
                 }
 
                 _this.componentDidUpdate = function () {
@@ -139,11 +139,11 @@
                     })
                 }
 
-                return _this; 
+                return _this;
             }
 
             var count = 0;
-            
+
             Mod.getDerivedStateFromProps = function () {
                 if (count === 0) {
                     console.log('初始化 getDerivedStateFromProps')
@@ -154,20 +154,20 @@
             }
 
             Mod.prototype.render = function () {
-               
-            
-                
-                
+
+
+
+
                 if (count === 0) {
                     console.log("初始化 render")
                     count = 1;
                 } else {
                     console.log("变更起 render")
                 }
-                
+
                 const self = this;
-                var errorFlag  = this.state.errorFlag;
-                
+                var errorFlag = this.state.errorFlag;
+
 
                 return React.createElement(
                     'div',

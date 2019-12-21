@@ -1,0 +1,233 @@
+<!-- /dist/index.html -->
+<!doctype html>
+<html>
+
+<head>
+  <title>react</title>
+  <script src="./react.js"></script>
+  <script src="./react-dom.js"></script>
+</head>
+
+<body>
+  <div id="root">
+
+  </div>
+  <script>
+    debugger;
+
+    var context = React.createContext('默认值');
+
+    var contextProvider = context.Provider;
+    var contextConsumer = context.Consumer;
+
+    var Son = (function (Component) {
+      Mod.prototype = Object.create(Component.prototype);
+      Mod.prototype.constructor = Mod;
+      Mod.__proto__ = Component;
+
+      function Mod() {
+        debugger;
+        var _this;
+
+        _this = Component.apply(this, arguments) || this;
+
+        return _this;
+      }
+
+      Mod.prototype.render = function () {
+
+        const self = this;
+        console.log('self', self);
+
+        return React.createElement(
+          'div',
+          {
+            onClick: function () {
+              self.context.rename('999');
+            }
+
+          },
+          self.context.value
+        );
+      }
+      return Mod;
+    }(React.Component))
+
+    var ShouldFalse = (function (Component) {
+      Mod.prototype = Object.create(Component.prototype);
+      Mod.prototype.constructor = Mod;
+      Mod.__proto__ = Component;
+
+      function Mod() {
+        var _this;
+
+        _this = Component.apply(this, arguments) || this;
+
+        _this.shouldComponentUpdate = function () {
+          // 接受两个参数nextProps,nextState
+          console.log('shouldComponentUpdate', arguments)
+          return false; // context子组件可以不受到shouldComponentUpdate的影响
+        }
+
+        return _this;
+      }
+
+      Mod.prototype.render = function () {
+
+        const self = this;
+        console.log('self', self);
+
+        return React.createElement(
+          'div',
+          {
+            onClick: function () {
+              self.context.rename('888');
+            }
+
+          },
+          self.context.value
+        );
+      }
+      return Mod;
+    }(React.Component))
+
+    // 注意，这个是关键，没有的话，就不能拿到Context了
+    Son.contextType = context;
+    ShouldFalse.contextType = context;
+
+    var Parent = (function (Component) {
+
+      Mod.prototype = Object.create(Component.prototype);
+      Mod.prototype.constructor = Mod;
+      Mod.__proto__ = Component;
+
+      function Mod() {
+        var _this;
+
+        _this = Component.apply(this, arguments) || this;
+        _this.state = {
+          name: 'TestMod',
+          errorFlag: false,
+        };
+
+        _this.componentDidMount = function () {
+          // 没参数
+          console.log('componentDidMount', arguments)
+        }
+
+        _this.shouldComponentUpdate = function () {
+          // 接受两个参数nextProps,nextState
+          console.log('shouldComponentUpdate', arguments)
+          return true;
+        }
+
+        _this.getSnapshotBeforeUpdate = function () {
+          // 接受2个参数，return的值作为componentDidUpdate的第三个参数
+          console.log('getSnapShotBeforeUpdate', arguments)
+          return { a: 1 };
+        }
+
+        _this.componentDidUpdate = function () {
+          // 接受3个参数，prevProps，prevState
+          console.log('componentDidUpdate', arguments)
+        }
+
+        _this.componentDidCatch = function (error, info) {
+          // 子组件的render发生异常，才会被执行的生命周期
+          console.log('Parent componentDidCatch', arguments)
+          _this.setState({
+            errorFlag: true,
+          })
+        }
+
+        return _this;
+      }
+
+      var count = 0;
+
+      Mod.getDerivedStateFromProps = function () {
+        if (count === 0) {
+          console.log('初始化 getDerivedStateFromProps')
+        } else {
+          console.log('变更期 getDerivedStateFromProps')
+        }
+        return null;
+      }
+
+      Mod.prototype.render = function () {
+
+        if (count === 0) {
+          console.log("初始化 render")
+          count = 1;
+        } else {
+          console.log("变更起 render")
+        }
+
+        const self = this;
+        var errorFlag = this.state.errorFlag;
+
+
+        return React.createElement(
+          'div',
+          {
+            key: 'Parent',
+            id: 'Parent',
+          },
+          React.createElement(
+            contextProvider,
+            {
+              value: {
+                value: self.state.name,
+                rename: function rename(name) {
+                  self.setState({
+                    name: name
+                  });
+                }
+              }
+            },
+            React.createElement(Son, null),
+            React.createElement(ShouldFalse, null),
+            React.createElement('div', null,
+              React.createElement(function (props, context) {
+                console.log('arguments1', arguments); // 它没有props，context
+
+                return React.createElement(Son, null); // 它拿到了Context
+              })
+            ),
+            React.createElement(contextConsumer, null, function (props) {
+              console.log('arguments2', arguments); // 它没有context，但是它拿到了Props
+              return React.createElement('div', null, props.value)
+            })
+          ),
+          React.createElement(contextProvider, null, // 拿不到默认的value
+            React.createElement(contextConsumer, null, function () { // 拿不到默认的value
+              console.log('arguments3', arguments);
+              return React.createElement('div', null, '111')
+            })
+          ),
+          React.createElement(contextProvider, null, // 它什么都没拿到
+            React.createElement(function () {
+              console.log('arguments4', arguments);
+              return React.createElement('div', null, '111')
+            })
+          ),
+          React.createElement(contextConsumer, null, function (props) { // 只有它才能拿到默认的value
+            console.log('arguments5', arguments);
+            return React.createElement('div', null, props)
+          })
+        );
+      }
+      return Mod;
+    }(React.Component))
+
+
+
+    var reactElement = React.createElement(Parent, null);
+
+    ReactDOM.render(reactElement, document.getElementById('root'))
+        // ReactDOM.render(Son, document.getElementById('root'))
+  </script>
+
+</body>
+
+</html>
