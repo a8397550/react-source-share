@@ -3104,14 +3104,7 @@
   // This is a flag so we can fix warnings in RN core before turning it on
 
 
-  // Experimental React Flare event system and event components support.
-  var enableFlareAPI = false;
 
-  // Experimental Host Component support.
-  var enableFundamentalAPI = false;
-
-  // New API for JSX transforms to target - https://github.com/reactjs/rfcs/pull/107
-  var enableJSXTransformAPI = false;
 
   // We will enforce mocking scheduler with scheduler/unstable_mock at some point. (v17?)
   // Till then, we warn about the missing mock, but still fallback to a sync mode compatible version
@@ -3641,15 +3634,56 @@
 
     createRef: createRef,
     Component: Component,
-    PureComponent: PureComponent,
+    PureComponent: PureComponent, // 自动进行shouldComponentUpdate的比较，需要注意的是，它是做props.xxx的浅比较的
     createContext: createContext,
     forwardRef: forwardRef,
     createElement: createElementWithValidation,
     cloneElement: cloneElementWithValidation,
-    createFactory: createFactoryWithValidation,
+    /**
+      var factory = React.createFactory("li");
+      var li1 = factory(null, 'First');
+      var li2 = factory(null, 'Second');  
+      var li3 = factory(null, 'Third');  
+      var ul = React.createElement('ul', {className: 'list'}, li1, li2, li3);  
+      ReactDOM.render(  
+          ul,  
+          document.getElementById('timeBox')  
+      );
+     */
+    createFactory: createFactoryWithValidation, // Factory [ˈfæktri] 工厂
 
+    /* 配合import()使用
+      const OtherComponent = React.lazy(() => import('./OtherComponent'));
+
+      function MyComponent() {
+        return (
+          <div>
+            <OtherComponent />
+          </div>
+        );
+      }
+     */
     lazy: lazy,
-    memo: memo,
+    /* 配合React.laze使用
+     render() {
+      return (
+        <div className="App">
+          <header className="App-header">
+          <Suspense fallback={<div>Loading...</div>}>
+            <OtherComponent />
+          </Suspense>
+          </header>
+        </div>
+      );
+    }
+    Suspense 使用的时候，fallback 一定是存在且有内容的， 否则会报错。
+
+    针对网络请求的 loading，我并没觉的这种 fallback 有什么帮助，因为他是组件加载的 loading，
+    如果组件加载完了，那么再去 fallback 就没意义，也没效果了。
+    */
+    Suspense: REACT_SUSPENSE_TYPE,
+
+    memo: memo, // 与PureComponent类似的功能，PureComponent只接受class，而mome支持function
 
     useCallback: useCallback,
     useContext: useContext,
@@ -3662,21 +3696,49 @@
     useRef: useRef,
     useState: useState,
 
-    Fragment: REACT_FRAGMENT_TYPE,
+    /**
+     * Fragments 允许你将子列表分组，而无需向 DOM 添加额外节点。它就是<>...</>元素
+     */
+    Fragment: REACT_FRAGMENT_TYPE, // [ˈfræɡmənt] 分段
+    /**
+     * React 16.5 添加了对新的 profiler DevTools 插件的支持。
+     * 这个插件使用 React 的 Profiler 实验性 API 去收集所有 component 的渲染时间，
+     * 目的是为了找出你的 React App 的性能瓶颈。它将会和我们即将发布的时间片 特性完全兼容。
+     */
     Profiler: REACT_PROFILER_TYPE,
+    /** React严格模式，严格模式检查仅在开发模式下运行；它们不会影响生产构建。
+     * StrictMode 是一个用来突出显示应用程序中潜在问题的工具。
+     * 与 Fragment 一样，StrictMode 不会渲染任何可见的 UI。它为其后代元素触发额外的检查和警告。 
+     * StrictMode 目前有助于：
+     *  识别不安全的生命周期
+     *  关于使用过时字符串 ref API 的警告
+     *  关于使用废弃的 findDOMNode 方法的警告
+     *  检测意外的副作用
+     *  检测过时的 context API
+     *  未来的 React 版本将添加更多额外功能。
+    */
     StrictMode: REACT_STRICT_MODE_TYPE,
-    Suspense: REACT_SUSPENSE_TYPE,
-    unstable_SuspenseList: REACT_SUSPENSE_LIST_TYPE,
 
 
-    isValidElement: isValidElement,
 
-    version: ReactVersion,
+    isValidElement: isValidElement, // 验证是否是 object.$$typeof === REACT_ELEMENT_TYPE
 
-    unstable_withSuspenseConfig: withSuspenseConfig,
+    version: ReactVersion, //  '16.9.0';
 
-    __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: ReactSharedInternals$2
+    unstable_SuspenseList: REACT_SUSPENSE_LIST_TYPE, // 这个也不知道干什么的，也没有在ReactDOM中搜索到它
+    unstable_withSuspenseConfig: withSuspenseConfig, // 不知道它是干什么的，也没有在ReactDOM中搜索到它
+
+    __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: ReactSharedInternals$2 // ReactDOM使用
   };
+
+  // Experimental React Flare event system and event components support.
+  var enableFlareAPI = false;
+
+  // Experimental Host Component support.
+  var enableFundamentalAPI = false;
+
+  // New API for JSX transforms to target - https://github.com/reactjs/rfcs/pull/107
+  var enableJSXTransformAPI = false;
 
   if (enableFlareAPI) {
     React.unstable_useResponder = useResponder;
@@ -3686,11 +3748,6 @@
   if (enableFundamentalAPI) {
     React.unstable_createFundamental = createFundamentalComponent;
   }
-
-  // Note: some APIs are added with feature flags.
-  // Make sure that stable builds for open source
-  // don't modify the React object to avoid deopts.
-  // Also let's not expose their names in stable builds.
 
   if (enableJSXTransformAPI) {
     {
