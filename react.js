@@ -3652,7 +3652,11 @@
      */
     createFactory: createFactoryWithValidation, // Factory [ˈfæktri] 工厂
 
-    /* 配合import()使用
+    /* 配合import()使用，import()方法是用来代替require，实现动态加载；
+      动态 import() 语法目前只是一个 ECMAScript (JavaScript) 提案， 而不是正式的语法标准。预计在不远的将来就会被正式接受。
+      当 Webpack 解析到该语法时，它会自动地开始进行代码分割。
+      当使用 Babel 时，你要确保 Babel 能够解析动态 import 语法而不是将其进行转换，对于这一要求你需要 babel-plugin-syntax-dynamic-import 插件。
+      注意：babel-plugin-syntax-dynamic-import 插件的作用是解析识别import()动态导入语法---并非转换，而是解析识别
       const OtherComponent = React.lazy(() => import('./OtherComponent'));
 
       function MyComponent() {
