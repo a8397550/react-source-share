@@ -1,18 +1,11 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Launch",
       "type": "node",
-      "request": "launch",
-      "name": "Launch Program",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "program": "${workspaceFolder}/script/function-pick-up.js",
-      "args": ["../react.js", "../react.new.js"]
+      "request": "attach", // 模式，监听端口，还是执行program
+      "port": 9229
     }
   ]
 }
