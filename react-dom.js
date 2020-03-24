@@ -1909,7 +1909,9 @@
         var replayFailedUnitOfWorkWithInvokeGuardedCallback = true;
 
         var warnAboutDeprecatedLifecycles = true;
-
+        /**
+         * 默认值 true
+         */
         var enableProfilerTimer = true;
 
         var enableSchedulerTracing = true;
@@ -22452,12 +22454,6 @@
         if (true && replayFailedUnitOfWorkWithInvokeGuardedCallback) {
           var dummyFiber = null;
           beginWork$$1 = function (current$$1, unitOfWork, expirationTime) {
-            // If a component throws an error, we replay it again in a synchronously
-            // dispatched event, so that the Debugger will treat it as an uncaught
-            // error See ReactErrorUtils for more information.
-
-            // Before entering the begin phase, copy the work-in-progress onto a dummy
-            // fiber. If beginWork throws, we'll use this to reset the state.
             var originalWorkInProgressCopy = assignFiberPropertiesInDEV(dummyFiber, unitOfWork);
             try {
               return beginWork$1(current$$1, unitOfWork, expirationTime);
@@ -22977,6 +22973,7 @@
             this._debugNeedsRemount = false;
             this._debugHookTypes = null;
             if (!hasBadMapPolyfill && typeof Object.preventExtensions === 'function') {
+              // 不可扩展
               Object.preventExtensions(this);
             }
           }
@@ -24059,7 +24056,7 @@
         };
 
         function ReactSyncRoot(container, tag, hydrate) {
-          // Tag is either LegacyRoot or Concurrent Root
+
           var root = createContainer(container, tag, hydrate);
           this._internalRoot = root;
         }
@@ -24179,13 +24176,15 @@
             }
           }
 
-          // Legacy roots are not batched.
+          // LegacyRoot 默认是0 shouldHydrate 是一个boolean值
           return new ReactSyncRoot(container, LegacyRoot, shouldHydrate);
         }
 
         function legacyRenderSubtreeIntoContainer(parentComponent, children, container, forceHydrate, callback) {
           {
+            // 验证container的一些内容
             topLevelUpdateWarnings(container);
+            // 验证callback要嘛是null，要嘛是function，不然弹出警告
             warnOnInvalidCallback(callback === undefined ? null : callback, 'render');
           }
 
@@ -24196,6 +24195,90 @@
           if (!root) {
             // Initial mount
             root = container._reactRootContainer = legacyCreateRootFromDOMContainer(container, forceHydrate);
+            /* root = FiberRootNode {_internalRoot}
+            root._internalRoot = [
+                {
+                  "key": "tag",
+                  "type": "number"
+                },
+                {
+                  "key": "current",
+                  "type": "object" // FiberNode
+                },
+                {
+                  "key": "containerInfo",
+                  "type": "object" // DOM Element
+                },
+                {
+                  "key": "pendingChildren",
+                  "type": "object" // null
+                },
+                {
+                  "key": "pingCache",
+                  "type": "object" // null
+                },
+                {
+                  "key": "finishedExpirationTime",
+                  "type": "number"
+                },
+                {
+                  "key": "finishedWork",
+                  "type": "object" // null
+                },
+                {
+                  "key": "timeoutHandle",
+                  "type": "number"
+                },
+                {
+                  "key": "context",
+                  "type": "object" // null
+                },
+                {
+                  "key": "pendingContext",
+                  "type": "object" // null
+                },
+                {
+                  "key": "hydrate",
+                  "type": "boolean"
+                },
+                {
+                  "key": "firstBatch",
+                  "type": "object" // null
+                },
+                {
+                  "key": "callbackNode",
+                  "type": "object" // null
+                },
+                {
+                  "key": "callbackExpirationTime",
+                  "type": "number"
+                },
+                {
+                  "key": "firstPendingTime",
+                  "type": "number"
+                },
+                {
+                  "key": "lastPendingTime",
+                  "type": "number"
+                },
+                {
+                  "key": "pingTime",
+                  "type": "number"
+                },
+                {
+                  "key": "interactionThreadID",
+                  "type": "number"
+                },
+                {
+                  "key": "memoizedInteractions",
+                  "type": "set"
+                },
+                {
+                  "key": "pendingInteractionMap",
+                  "type": "map"
+                }
+              ] 
+            */
             fiberRoot = root._internalRoot;
             if (typeof callback === 'function') {
               var originalCallback = callback;
@@ -24204,7 +24287,7 @@
                 originalCallback.call(instance);
               };
             }
-            // Initial mount should not be batched.
+            debugger;
             unbatchedUpdates(function () {
               updateContainer(children, fiberRoot, parentComponent, callback);
             });
@@ -24275,7 +24358,7 @@
             return legacyRenderSubtreeIntoContainer(null, element, container, true, callback);
           },
           render: function (element, container, callback) {
-            debugger;
+            debugger; // ReactDOM.render
             (function () {
               if (!isValidContainer(container)) {
                 {
