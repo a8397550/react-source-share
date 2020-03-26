@@ -570,6 +570,8 @@
         var warningWithoutStack$1 = warningWithoutStack;
 
         /**
+         * @description 验证node[internalInstanceKey]具备不具备这个属性
+         * internalInstanceKey是一个常量 '__reactInternalInstance$' + Math.random().toString(36).slice(2);
          * @description 会作为的setComponentTree第二个参数
          * @param {*} node 
          */
@@ -1899,84 +1901,100 @@
             }
           }
         }
-
+        /**
+         * 默认值 true
+         */
         var enableUserTimingAPI = true;
-
+        /**
+         * 默认值 false
+         */
         var debugRenderPhaseSideEffects = false;
-
+        /**
+         * 默认值 true
+         */
         var debugRenderPhaseSideEffectsForStrictMode = true;
-
+        /**
+         * 默认值 true
+         */
         var replayFailedUnitOfWorkWithInvokeGuardedCallback = true;
-
+        /**
+         * 默认值 true
+         */
         var warnAboutDeprecatedLifecycles = true;
         /**
          * 默认值 true
          */
         var enableProfilerTimer = true;
-
+        /**
+         * 默认值 true
+         */
         var enableSchedulerTracing = true;
-
+        /**
+         * 默认值 false
+         */
         var enableSuspenseServerRenderer = false;
-
+        /**
+         * 默认值 false
+         */
         var disableJavaScriptURLs = false;
-
-        // React Fire: prevent the value and checked attributes from syncing
-        // with their related DOM properties
+        /**
+         * 默认值 false
+         */
         var disableInputAttributeSyncing = false;
-
-        // These APIs will no longer be "unstable" in the upcoming 16.7 release,
-        // Control this behavior with a flag to support 16.6 minor releases in the meanwhile.
+        /**
+         * 默认值 false
+         */
         var enableStableConcurrentModeAPIs = false;
-
+        /**
+         * 默认值 false
+         */
         var warnAboutShorthandPropertyCollision = false;
-
-        // See https://github.com/react-native-community/discussions-and-proposals/issues/72 for more information
-        // This is a flag so we can fix warnings in RN core before turning it on
-
-
-        // Experimental React Flare event system and event components support.
+        /**
+         * 默认值 false
+         */
         var enableFlareAPI = false;
 
-        // Experimental Host Component support.
+        /**
+         * 默认值 false
+         */
         var enableFundamentalAPI = false;
 
-        // New API for JSX transforms to target - https://github.com/reactjs/rfcs/pull/107
-
-
-        // We will enforce mocking scheduler with scheduler/unstable_mock at some point. (v17?)
-        // Till then, we warn about the missing mock, but still fallback to a sync mode compatible version
+        /**
+         * 默认值 false
+         */
         var warnAboutUnmockedScheduler = false;
-        // Temporary flag to revert the fix in #15650
+        /**
+         * 默认值 false
+         */
         var revertPassiveEffectsChange = false;
 
-        // For tests, we flush suspense fallbacks in an act scope;
-        // *except* in some of our own tests, where we test incremental loading states.
+        /**
+         * 默认值 true
+         */
         var flushSuspenseFallbacksInTests = true;
 
-        // Changes priority of some events like mousemove to user-blocking priority,
-        // but without making them discrete. The flag exists in case it causes
-        // starvation problems.
+        /**
+         * 默认值 false
+         */
         var enableUserBlockingEvents = false;
 
-        // Add a callback property to suspense to notify which promises are currently
-        // in the update queue. This allows reporting and tracing of what is causing
-        // the user to see a loading state.
+        /**
+         * 默认值 false
+         */
         var enableSuspenseCallback = false;
 
-        // Part of the simplification of React.createElement so we can eventually move
-        // from React.createElement to React.jsx
-        // https://github.com/reactjs/rfcs/blob/createlement-rfc/text/0000-create-element-changes.md
+        /**
+         * 默认值 false
+         */
         var warnAboutDefaultPropsOnFunctionComponents = false;
-
+        /**
+         * 默认值 false
+         */
         var disableLegacyContext = false;
-
+        /**
+         * 默认值 false
+         */
         var disableSchedulerTimeoutBasedOnReactExpirationTime = false;
-
-        // Used as a way to call batchedUpdates when we don't have a reference to
-        // the renderer. Such as when we're dispatching events or if third party
-        // libraries need to call batchedUpdates. Eventually, this API will go away when
-        // everything is batched by default. We'll then have a similar API to opt-out of
-        // scheduled work and instead do synchronous work.
 
         // Defaults
         var batchedUpdatesImpl = function (fn, bookkeeping) {
@@ -2110,14 +2128,31 @@
           return false;
         }
 
-        /**
-         * HTML nodeType values that represent the type of the node
-         */
 
+        /**
+         * nodeType使用 表示一个元素节点
+         * 默认值 1
+         */
         var ELEMENT_NODE = 1;
+        /**
+         * nodeType使用 表示一个文本节点
+         * 默认值 3
+         */
         var TEXT_NODE = 3;
+        /**
+         * nodeType使用 表示一个注释
+         * 默认值 8
+         */
         var COMMENT_NODE = 8;
+        /**
+         * nodeType使用 document的nodeType是9
+         * 默认值 9
+         */
         var DOCUMENT_NODE = 9;
+        /**
+         * nodeType使用 DocumentFragment的nodeType 是11
+         * 默认值 11
+         */
         var DOCUMENT_FRAGMENT_NODE = 11;
 
         /**
@@ -2577,7 +2612,9 @@
         /* eslint-enable max-len */
         var ATTRIBUTE_NAME_CHAR = ATTRIBUTE_NAME_START_CHAR + '\\-.0-9\\u00B7\\u0300-\\u036F\\u203F-\\u2040';
 
-
+        /**
+         * 默认值 data-reactroot
+         */
         var ROOT_ATTRIBUTE_NAME = 'data-reactroot';
         var VALID_ATTRIBUTE_NAME_REGEX = new RegExp('^[' + ATTRIBUTE_NAME_START_CHAR + '][' + ATTRIBUTE_NAME_CHAR + ']*$');
 
@@ -9857,16 +9894,20 @@
 
         var isPrimaryRenderer = true;
         var warnsIfNotActing = true;
-        // This initialization code may run even on server environments
-        // if a component just imports ReactDOM (e.g. for findDOMNode).
-        // Some environments might not have setTimeout or clearTimeout.
+        
+        /**
+         * setTimeout 的别名，他就是setTimeout
+         */
         var scheduleTimeout = typeof setTimeout === 'function' ? setTimeout : undefined;
+        /**
+         * clearTimeout 的别名，他就是clearTimeout
+         */
         var cancelTimeout = typeof clearTimeout === 'function' ? clearTimeout : undefined;
+        /**
+         * 默认值 -1
+         */
         var noTimeout = -1;
 
-        // -------------------
-        //     Mutation
-        // -------------------
 
         var supportsMutation = true;
 
@@ -11056,6 +11097,9 @@
           }
         }
 
+        /**
+         * 默认值 0
+         */
         var LegacyRoot = 0;
         var BatchedRoot = 1;
         var ConcurrentRoot = 2;
@@ -11259,22 +11303,43 @@
         var ConcurrentMode = 4;
         var ProfileMode = 8;
 
-        // Max 31 bit integer. The max integer size in V8 for 32-bit systems.
-        // Math.pow(2, 30) - 1
-        // 0b111111111111111111111111111111
+        /**
+         *  @description Max 31 bit integer. The max integer size in V8 for 32-bit systems.
+         *  @description Math.pow(2, 30) - 1
+         *  @description 0b111111111111111111111111111111
+         *  @description 最大31位整数。V8中32位系统的最大整数大小。
+         */
         var MAX_SIGNED_31_BIT_INT = 1073741823;
-
+        /**
+         * 默认值 0
+         */
         var NoWork = 0;
+        /**
+         * 默认值 1
+         */
         var Never = 1;
+        /**
+         * 默认值 Sync = MAX_SIGNED_31_BIT_INT = 1073741823
+         */
         var Sync = MAX_SIGNED_31_BIT_INT;
+        /**
+         * 默认值 Batched = (Sync = MAX_SIGNED_31_BIT_INT = 1073741823) - 1
+         */
         var Batched = Sync - 1;
-
+        /**
+         * 默认值 10
+         */
         var UNIT_SIZE = 10;
+        /**
+         * 默认值 MAGIC_NUMBER_OFFSET = (Batched = (Sync = MAX_SIGNED_31_BIT_INT = 1073741823) - 1) - 1
+         */
         var MAGIC_NUMBER_OFFSET = Batched - 1;
 
-        // 1 unit of expiration time represents 10ms.
+        /**
+         * 1个到期时间单位表示10毫秒。
+         */
         function msToExpirationTime(ms) {
-          // Always add an offset so that we don't clash with the magic number for NoWork.
+          // 总是加一个偏移量，这样我们就不会和现在的数字冲突。
           return MAGIC_NUMBER_OFFSET - (ms / UNIT_SIZE | 0);
         }
 
@@ -11304,17 +11369,6 @@
           return computeExpirationBucket(currentTime, timeoutMs, LOW_PRIORITY_BATCH_SIZE);
         }
 
-        // We intentionally set a higher expiration time for interactive updates in
-        // dev than in production.
-        //
-        // If the main thread is being blocked so long that you hit the expiration,
-        // it's a problem that could be solved with better scheduling.
-        //
-        // People will be more likely to notice this and fix it with the long
-        // expiration time in development.
-        //
-        // In production we opt for better UX at the risk of masking scheduling
-        // problems, by expiring fast.
         var HIGH_PRIORITY_EXPIRATION = 500;
         var HIGH_PRIORITY_BATCH_SIZE = 100;
 
@@ -20561,28 +20615,71 @@
         var ReactCurrentOwner$2 = ReactSharedInternals.ReactCurrentOwner;
         var IsSomeRendererActing = ReactSharedInternals.IsSomeRendererActing;
 
+        /**
+         * 默认值 0
+         */
+        var NoContext = 0;
+        /**
+         * 默认值 1
+         */
+        var BatchedContext = 1;
+        /**
+         * 默认值 2
+         */
+        var EventContext = 2;
+        /**
+         * 默认值 4
+         */
+        var DiscreteEventContext = 4;
+        /**
+         * 默认值 8
+         */
+        var LegacyUnbatchedContext = 8;
+        /**
+         * 默认值 16
+         */
+        var RenderContext = 16;
+        /**
+         * 默认值 32
+         */
+        var CommitContext = 32;
 
-        var NoContext = /*                    */0;
-        var BatchedContext = /*               */1;
-        var EventContext = /*                 */2;
-        var DiscreteEventContext = /*         */4;
-        var LegacyUnbatchedContext = /*       */8;
-        var RenderContext = /*                */16;
-        var CommitContext = /*                */32;
-
+        /**
+         * 默认值 0
+         */
         var RootIncomplete = 0;
+        /**
+         * 默认值 1
+         */
         var RootErrored = 1;
+        /**
+         * 默认值 2
+         */
         var RootSuspended = 2;
+        /**
+         * 默认值 3
+         */
         var RootSuspendedWithDelay = 3;
+        /**
+         * 默认值 4
+         */
         var RootCompleted = 4;
 
-        // Describes where we are in the React execution stack
+        /**
+         * 默认值 NoContext = 0
+         */
         var executionContext = NoContext;
-        // The root we're working on
+        /**
+         * 默认值 null
+         */
         var workInProgressRoot = null;
-        // The fiber we're working on
+        /**
+         * 默认值 null
+         */
         var workInProgress = null;
-        // The expiration time we're rendering
+        /**
+         * 默认值 NoWork
+         */
         var renderExpirationTime = NoWork;
         // Whether to root completed, errored, suspended, etc.
         var workInProgressRootExitStatus = RootIncomplete;
@@ -20746,7 +20843,7 @@
 
           if (expirationTime === Sync) {
             if (
-              // Check if we're inside unbatchedUpdates
+
               (executionContext & LegacyUnbatchedContext) !== NoContext &&
               // Check if we're not already rendering
               (executionContext & (RenderContext | CommitContext)) === NoContext) {
@@ -21005,15 +21102,24 @@
         }
 
         function unbatchedUpdates(fn, a) {
+          // executionContext 初始值是0
+          // prevExecutionContext = 0
           var prevExecutionContext = executionContext;
-          executionContext &= ~BatchedContext;
-          executionContext |= LegacyUnbatchedContext;
+          // 位运算
+          // 初始化时 executionContext = 0 & ~1 = 0
+          executionContext = executionContext & ~BatchedContext;
+          // 初始化时 executionContext = 0 | 8 = 8
+          executionContext = executionContext | LegacyUnbatchedContext;
           try {
+            // 初始化时 a = undefined
             return fn(a);
           } finally {
+            // 恢复executionContext的值
+            // 初始化时，executionContext = prevExecutionContext = 0
             executionContext = prevExecutionContext;
+            // NoContext 初始值是 0
             if (executionContext === NoContext) {
-              // Flush the immediate callbacks that were scheduled during this batch
+
               flushSyncCallbackQueue();
             }
           }
@@ -22373,7 +22479,7 @@
             return 0;
           }
           var msUntilTimeout = busyDelayMs + busyMinDurationMs - timeElapsed;
-          // This is the value that is passed to `setTimeout`.
+
           return msUntilTimeout;
         }
 
@@ -23185,9 +23291,6 @@
           }
 
           if (enableProfilerTimer && isDevToolsPresent) {
-            // Always collect profile timings when DevTools are present.
-            // This enables DevTools to start capturing timing at any point–
-            // Without some nodes in the tree having empty base times.
             mode |= ProfileMode;
           }
 
@@ -23442,21 +23545,6 @@
           return target;
         }
 
-        // TODO: This should be lifted into the renderer.
-
-
-        // The following attributes are only used by interaction tracing builds.
-        // They enable interactions to be associated with their async work,
-        // And expose interaction metadata to the React DevTools Profiler plugin.
-        // Note that these attributes are only defined when the enableSchedulerTracing flag is enabled.
-
-
-        // Exported FiberRoot type includes all properties,
-        // To avoid requiring potentially error-prone :any casts throughout the project.
-        // Profiling properties are only safe to access in profiling builds (when enableSchedulerTracing is true).
-        // The types are defined separately within this file to ensure they stay in sync.
-        // (We don't have to use an inline :any cast when enableSchedulerTracing is disabled.)
-
 
         function FiberRootNode(containerInfo, tag, hydrate) {
           this.tag = tag;
@@ -23484,6 +23572,9 @@
           }
         }
 
+        /**
+         * @description 创建一个构造 new FiberRootNode
+         **/
         function createFiberRoot(containerInfo, tag, hydrate) {
           var root = new FiberRootNode(containerInfo, tag, hydrate);
 
@@ -23658,10 +23749,6 @@
             return hostFiber.stateNode;
           }
           return findHostInstance(component);
-        }
-
-        function createContainer(containerInfo, tag, hydrate) {
-          return createFiberRoot(containerInfo, tag, hydrate);
         }
 
         function updateContainer(element, container, parentComponent, callback) {
@@ -23850,6 +23937,11 @@
 
         var ReactCurrentOwner = ReactSharedInternals.ReactCurrentOwner;
 
+        /**
+         * @description 验证 container 有没有被react初始化过
+         * 当ReactDOM.render时，会走进入这个方法内，验证传入的node是否被react处理过
+         * 初始化时 container._reactRootContainer === undefined
+         */
         var topLevelUpdateWarnings = void 0;
         var warnOnInvalidCallback = void 0;
         var didWarnAboutUnstableCreatePortal = false;
@@ -23862,9 +23954,9 @@
             Set.prototype == null || typeof Set.prototype.clear !== 'function' || typeof Set.prototype.forEach !== 'function') {
             warningWithoutStack$1(false, 'React depends on Map and Set built-in types. Make sure that you load a ' + 'polyfill in older browsers. https://fb.me/react-polyfills');
           }
-
           topLevelUpdateWarnings = function (container) {
             if (container._reactRootContainer && container.nodeType !== COMMENT_NODE) {
+              // 进入if的条件时container._reactRootContainer存在并且container不是一个注释，而是一个元素
               var hostInstance = findHostInstanceWithNoPortals(container._reactRootContainer._internalRoot.current);
               if (hostInstance) {
                 !(hostInstance.parentNode === container) ? warningWithoutStack$1(false, 'Render(...): It looks like the React-rendered content of this ' + 'container was removed without using React. This is not ' + 'supported and will cause errors. Instead, call ' + 'ReactDOM.unmountComponentAtNode to empty a container.') : void 0;
@@ -23872,8 +23964,8 @@
             }
 
             var isRootRenderedBySomeReact = !!container._reactRootContainer;
-            var rootEl = getReactRootElementInContainer(container);
-            var hasNonRootReactChild = !!(rootEl && getInstanceFromNode$1(rootEl));
+            var rootEl = getReactRootElementInContainer(container); // 获取container元素节点下的第一个子节点
+            var hasNonRootReactChild = !!(rootEl && getInstanceFromNode$1(rootEl)); // 验证node具备不具备"internalInstanceKey"属性，初始化时，node是没有那个属性的
 
             !(!hasNonRootReactChild || isRootRenderedBySomeReact) ? warningWithoutStack$1(false, 'Render(...): Replacing React-rendered children with a new root ' + 'component. If you intended to update the children of this node, ' + 'you should instead have the existing children update their state ' + 'and Render the new components instead of calling ReactDOM.Render.') : void 0;
 
@@ -24055,14 +24147,26 @@
           }
         };
 
+        /**
+         * @description 构造对象 ReactSyncRoot
+         * @param {HTMLElement} container 
+         * @param {number} tag 最初是0
+         * @param {boolean} hydrate 
+         * this._internalRoot = new fiberRootNode
+         */
         function ReactSyncRoot(container, tag, hydrate) {
-
-          var root = createContainer(container, tag, hydrate);
+          var root = createFiberRoot(container, tag, hydrate);
           this._internalRoot = root;
         }
 
+        /**
+         * @description 构造对象 ReactRoot 
+         * @param {HTMLElement} container 
+         * @param {boolean} hydrate 
+         * this._internalRoot = new fiberRootNode
+         */
         function ReactRoot(container, hydrate) {
-          var root = createContainer(container, ConcurrentRoot, hydrate);
+          var root = createFiberRoot(container, ConcurrentRoot, hydrate);
           this._internalRoot = root;
         }
 
@@ -24122,16 +24226,18 @@
         };
 
         /**
-         * True if the supplied DOM node is a valid node element.
-         *
-         * @param {?DOMElement} node The candidate DOM node.
-         * @return {boolean} True if the DOM is a valid DOM node.
-         * @internal
+         * node存在 && (node.nodeType = 1 | 9 | 11 | 8 && node.nodeValue === ' react-mount-point-unstable ')
+         * (1 || 9 || 11 || 8 && 1) 当nodeType = 1 | 9 | 11 时返回true
+         * 当nodeType ===   并且 node.nodeValue === ' react-mount-point-unstable ' 返回true
          */
         function isValidContainer(node) {
           return !!(node && (node.nodeType === ELEMENT_NODE || node.nodeType === DOCUMENT_NODE || node.nodeType === DOCUMENT_FRAGMENT_NODE || node.nodeType === COMMENT_NODE && node.nodeValue === ' react-mount-point-unstable '));
         }
 
+        /**
+         * @description 获取元素下的第一个节点 container.firstChild;
+         * @param {*} container 
+         */
         function getReactRootElementInContainer(container) {
           if (!container) {
             return null;
@@ -24144,19 +24250,33 @@
           }
         }
 
+        /**
+         * @description 验证container.firstChild 是不是一个元素，并且有没有data-reactroot这个属性 返回false
+         * @description container.firstChild 大概率拿到一个nodeType === 3的文本节点，当拿到文本节点返回false
+         * @description 验证是否时服务端渲染的
+         */
         function shouldHydrateDueToLegacyHeuristic(container) {
           var rootElement = getReactRootElementInContainer(container);
           return !!(rootElement && rootElement.nodeType === ELEMENT_NODE && rootElement.hasAttribute(ROOT_ATTRIBUTE_NAME));
         }
 
         setBatchingImplementation(batchedUpdates$1, discreteUpdates$1, flushDiscreteUpdates, batchedEventUpdates$1);
-
+        /**
+         * 默认值 false
+         */
         var warnedAboutHydrateAPI = false;
 
+        /**
+         * @description new ReactSyncRoot(container, LegacyRoot, shouldHydrate);
+         * @param {*} container 
+         * @param {*} forceHydrate 
+         */
         function legacyCreateRootFromDOMContainer(container, forceHydrate) {
+          // forceHydrate 在React.render时默认时false
           var shouldHydrate = forceHydrate || shouldHydrateDueToLegacyHeuristic(container);
-          // First clear any existing content.
+          
           if (!shouldHydrate) {
+            // 删除container下所有子节点
             var warned = false;
             var rootSibling = void 0;
             while (rootSibling = container.lastChild) {
@@ -24179,18 +24299,25 @@
           // LegacyRoot 默认是0 shouldHydrate 是一个boolean值
           return new ReactSyncRoot(container, LegacyRoot, shouldHydrate);
         }
-
+        /**
+         * 
+         * @param {*} parentComponent 父级元素
+         * @param {*} children  React
+         * @param {*} container 真实DOM
+         * @param {*} forceHydrate 是否服务端渲染
+         * @param {*} callback callback
+         */
         function legacyRenderSubtreeIntoContainer(parentComponent, children, container, forceHydrate, callback) {
           {
-            // 验证container的一些内容
+            // 验证container有没有被react初始化过
             topLevelUpdateWarnings(container);
-            // 验证callback要嘛是null，要嘛是function，不然弹出警告
+            // 验证callback必须是function或undefined，不然弹出警告
             warnOnInvalidCallback(callback === undefined ? null : callback, 'render');
           }
 
-          // TODO: Without `any` type, Flow says "Property cannot be accessed on any
-          // member of intersection type." Whyyyyyy.
-          var root = container._reactRootContainer;
+          // 默认的时候
+          var root = container._reactRootContainer; 
+          // fiber [faɪbə] 构造的意思
           var fiberRoot = void 0;
           if (!root) {
             // Initial mount
@@ -24351,7 +24478,7 @@
                 }
               }
             })();
-            {
+            { // 验证此container有没有被使用过
               !!container._reactHasBeenPassedToCreateRootDEV ? warningWithoutStack$1(false, 'You are calling ReactDOM.hydrate() on a container that was previously ' + 'passed to ReactDOM.%s(). This is not supported. ' + 'Did you mean to call createRoot(container, {hydrate: true}).Render(element)?', enableStableConcurrentModeAPIs ? 'createRoot' : 'unstable_createRoot') : void 0;
             }
             // TODO: throw or warn if we couldn't hydrate?
@@ -24360,7 +24487,9 @@
           render: function (element, container, callback) {
             debugger; // ReactDOM.render
             (function () {
-              if (!isValidContainer(container)) {
+              // 自执行函数，验证node.nodeType 是一个元素
+              var isValid = isValidContainer(container);
+              if (!isValid) {
                 {
                   throw ReactError(Error('Target container is not a DOM element.'));
                 }
@@ -24408,7 +24537,7 @@
                 !!renderedByDifferentReact ? warningWithoutStack$1(false, "unmountComponentAtNode(): The node you're attempting to unmount " + 'was rendered by another copy of React.') : void 0;
               }
 
-              // Unmount should not be batched.
+
               unbatchedUpdates(function () {
                 legacyRenderSubtreeIntoContainer(null, null, container, false, function () {
                   container._reactRootContainer = null;
@@ -24499,6 +24628,11 @@
           return new ReactSyncRoot(container, BatchedRoot, hydrate);
         }
 
+        /**
+         * 
+         * 此方法会导致 container._reactHasBeenPassedToCreateRootDEV = true;
+         * @param {*} container 
+         */
         function warnIfReactDOMContainerInDEV(container) {
           {
             !!container._reactRootContainer ? warningWithoutStack$1(false, 'You are calling ReactDOM.%s() on a container that was previously ' + 'passed to ReactDOM.Render(). This is not supported.', enableStableConcurrentModeAPIs ? 'createRoot' : 'unstable_createRoot') : void 0;
