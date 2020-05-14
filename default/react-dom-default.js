@@ -1,64 +1,75 @@
-// @license React v16.9.0 react-dom.development.js
-'use strict';
-(
-function (global, factory) {
-  // 如果exports对象，module存在的话，大概是在node环境中，使用commonjs规范导出 module.exports
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('react')) :
-  // 这里看支持不支持sea.js或者require.js的语法糖，具备amd或cmd的支持插件
-  typeof define === 'function' && define.amd ? define(['react'], factory) :
-  // 如果都没有加入到执行传入的factory函数，并将React对象传入，global一般指向window对象，具体看传入的this对象
-	(global.ReactDOM = factory(global.React));
-}
-(
-  this, // 形参一
-  (function (React) { // 形参二 Start
-     'use strict';
-     debugger
-/**
- * @description 给New Error()实例添加一个name = Invariant Violation
- * @param {*} error 
+/** @license React v16.9.0
+ * react-dom.development.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
+'use strict';
+
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('react')) :
+	typeof define === 'function' && define.amd ? define(['react'], factory) :
+	(global.ReactDOM = factory(global.React));
+}(this, (function (React) { 'use strict';
+
+// Do not require this module directly! Use normal `invariant` calls with
+// template literal strings. The messages will be converted to ReactError during
+// build, and in production they will be minified.
+
+// Do not require this module directly! Use normal `invariant` calls with
+// template literal strings. The messages will be converted to ReactError during
+// build, and in production they will be minified.
+
 function ReactError(error) {
   error.name = 'Invariant Violation';
   return error;
 }
 
+/**
+ * Use invariant() to assert state which your program assumes to be true.
+ *
+ * Provide sprintf-style format (only %s is supported) and arguments
+ * to provide information about what broke and what you were
+ * expecting.
+ *
+ * The invariant message will be stripped in production, but the invariant
+ * will remain to ensure logic does not differ in production.
+ */
+
 (function () {
   if (!React) {
-    { // 没有react就报错 抛异常就不往下走的
+    {
       throw ReactError(Error('ReactDOM was loaded before React. Make sure you load the React package before loading ReactDOM.'));
     }
   }
 })();
 
-console.log('抛异常就不往下走的')
-
 /**
- * 事件插件的可注入顺序。
- * value = [ResponderEventPlugin,SimpleEventPlugin,EnterLeaveEventPlugin,ChangeEventPlugin,SelectEventPlugin,BeforeInputEventPlugin]
+ * Injectable ordering of event plugins.
  */
 var eventPluginOrder = null;
 
 /**
- * 从名称到事件插件模块的可注入映射。
+ * Injectable mapping from names to event plugin modules.
  */
 var namesToPlugins = {};
 
 /**
- * 使用注入的插件和插件顺序重新计算插件列表。
+ * Recomputes the plugin list using the injected plugins and plugin ordering.
  *
  * @private
  */
 function recomputePluginOrdering() {
   if (!eventPluginOrder) {
+    // Wait until an `eventPluginOrder` is injected.
     return;
   }
-  
   for (var pluginName in namesToPlugins) {
-    debugger;
     var pluginModule = namesToPlugins[pluginName];
     var pluginIndex = eventPluginOrder.indexOf(pluginName);
-    // 不存在抛异常
     (function () {
       if (!(pluginIndex > -1)) {
         {
@@ -66,11 +77,9 @@ function recomputePluginOrdering() {
         }
       }
     })();
-
     if (plugins[pluginIndex]) {
       continue;
     }
-
     (function () {
       if (!pluginModule.extractEvents) {
         {
@@ -78,11 +87,8 @@ function recomputePluginOrdering() {
         }
       }
     })();
-
     plugins[pluginIndex] = pluginModule;
-
     var publishedEvents = pluginModule.eventTypes;
-
     for (var eventName in publishedEvents) {
       (function () {
         if (!publishEventForPlugin(publishedEvents[eventName], pluginModule, eventName)) {
@@ -92,7 +98,6 @@ function recomputePluginOrdering() {
         }
       })();
     }
-
   }
 }
 
@@ -203,7 +208,6 @@ var possibleRegistrationNames = {};
  * @see {EventPluginHub.injection.injectEventPluginOrder}
  */
 function injectEventPluginOrder(injectedEventPluginOrder) {
-  debugger;
   (function () {
     if (!!eventPluginOrder) {
       {
@@ -216,8 +220,17 @@ function injectEventPluginOrder(injectedEventPluginOrder) {
   recomputePluginOrdering();
 }
 
+/**
+ * Injects plugins to be used by `EventPluginHub`. The plugin names must be
+ * in the ordering injected by `injectEventPluginOrder`.
+ *
+ * Plugins can be injected as part of page initialization or on-the-fly.
+ *
+ * @param {object} injectedNamesToPlugins Map from names to plugin modules.
+ * @internal
+ * @see {EventPluginHub.injection.injectEventPluginsByName}
+ */
 function injectEventPluginsByName(injectedNamesToPlugins) {
-  debugger;
   var isOrderingDirty = false;
   for (var pluginName in injectedNamesToPlugins) {
     if (!injectedNamesToPlugins.hasOwnProperty(pluginName)) {
@@ -1282,11 +1295,11 @@ function getVendorPrefixedEventName(eventName) {
 }
 
 /**
- * 为了识别ReactDOM中的顶级事件，我们使用
- * 模块。这是唯一一个使用不安全*方法来表示
- * 常量实际上对应于浏览器事件名。这让
- * 我们通过避免顶级类型->事件名称映射来节省一些包大小。
- * 其余的ReactDOM代码应该从这个文件导入顶级类型。
+ * To identify top level events in ReactDOM, we use constants defined by this
+ * module. This is the only module that uses the unsafe* methods to express
+ * that the constants actually correspond to the browser event names. This lets
+ * us save some bundle size by avoiding a top level type -> event name map.
+ * The rest of ReactDOM code should import top level types from this file.
  */
 var TOP_ABORT = unsafeCastStringToDOMTopLevelType('abort');
 var TOP_ANIMATION_END = unsafeCastStringToDOMTopLevelType(getVendorPrefixedEventName('animationend'));
@@ -25337,6 +25350,4 @@ var reactDom = ReactDOM$3.default || ReactDOM$3;
 
 return reactDom;
 
-  }) // 形参二 End
-)
-);
+})));
