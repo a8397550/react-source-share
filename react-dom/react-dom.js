@@ -2210,7 +2210,7 @@ var debugRenderPhaseSideEffects = false;
 // This feature flag can be used to control the behavior:
 var debugRenderPhaseSideEffectsForStrictMode = true;
 
-// To preserve the "Pause on caught exceptions" behavior of the debugger, we
+// To preserve the "Pause on caught exceptions" behavior of the Debugger, we
 // replay the begin phase of a failed component inside invokeGuardedCallback.
 var replayFailedUnitOfWorkWithInvokeGuardedCallback = true;
 
@@ -7268,13 +7268,19 @@ function restoreControlledState$3(element, props) {
   updateWrapper$1(element, props);
 }
 
+/** 常量 http://www.w3.org/1999/xhtml */
 var HTML_NAMESPACE$1 = 'http://www.w3.org/1999/xhtml';
+/** 常量 http://www.w3.org/1998/Math/MathML */
 var MATH_NAMESPACE = 'http://www.w3.org/1998/Math/MathML';
+/** 常量 http://www.w3.org/2000/svg */
 var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
 var Namespaces = {
+  /** 常量 http://www.w3.org/1999/xhtml */
   html: HTML_NAMESPACE$1,
+  /** 常量 http://www.w3.org/1998/Math/MathML */
   mathml: MATH_NAMESPACE,
+  /** 常量 http://www.w3.org/2000/svg */
   svg: SVG_NAMESPACE
 };
 
@@ -8678,7 +8684,7 @@ var CHILDREN = 'children';
 var STYLE$1 = 'style';
 var HTML = '__html';
 var LISTENERS = 'listeners';
-
+/** 常量 http://www.w3.org/1999/xhtml */
 var HTML_NAMESPACE = Namespaces.html;
 
 
@@ -8897,18 +8903,21 @@ function updateDOMProperties(domElement, updatePayload, wasCustomComponentTag, i
 }
 
 function createElement(type, props, rootContainerElement, parentNamespace) {
+  window._react_state.createElementFNCount = (window._react_state.createElementFNCount || 0) + 1;
   var isCustomComponentTag = void 0;
 
-  // We create tags in the namespace of their parent container, except HTML
-  // tags get no namespace.
+  // 此方法会返回 document 对象
   var ownerDocument = getOwnerDocumentFromRootContainer(rootContainerElement);
   var domElement = void 0;
+  // 命名空间 http://www.w3.org/1999/xhtml
   var namespaceURI = parentNamespace;
   if (namespaceURI === HTML_NAMESPACE) {
+    // 如果是 svg 或 math 标签 需要更换命名空间
     namespaceURI = getIntrinsicNamespace(type);
   }
   if (namespaceURI === HTML_NAMESPACE) {
     {
+      // isCustomComponent 验证是否是一个自定义的节点，type是否符合规范
       isCustomComponentTag = isCustomComponent(type, props);
       // Should this check be gated by parent namespace? Not sure we want to
       // allow <SVG> or <mATH>.
@@ -10054,9 +10063,11 @@ function resetAfterCommit(containerInfo) {
 }
 
 function createInstance(type, props, rootContainerInstance, hostContext, internalInstanceHandle) {
+  window._react_state.createInstanceFNCount = (window._react_state.createInstanceFNCount || 0) + 1;
   var parentNamespace = void 0;
   {
     // TODO: take namespace into account when validating.
+    // TODO: 验证时考虑命名空间。
     var hostContextDev = hostContext;
     validateDOMNesting(type, null, hostContextDev.ancestorInfo);
     if (typeof props.children === 'string' || typeof props.children === 'number') {
@@ -10067,7 +10078,9 @@ function createInstance(type, props, rootContainerInstance, hostContext, interna
     parentNamespace = hostContextDev.namespace;
   }
   var domElement = createElement(type, props, rootContainerInstance, parentNamespace);
+  // 将虚拟DOM节点写入到真实DOM中
   precacheFiberNode(internalInstanceHandle, domElement);
+  // 将Props也写入到真实DOM中
   updateFiberProps(domElement, props);
   return domElement;
 }
@@ -19138,9 +19151,26 @@ function cutOffTailIfNeeded(renderState, hasRenderedATailFallback) {
       }
   }
 }
-
+window._react_state = {
+  count: 0,
+  fiberList: [],
+  tags: [],
+  modes: [],
+  pendingProps: [],
+  memoizedProps: [],
+  memoizedState: []
+};
 function completeWork(current, workInProgress, renderExpirationTime) {
   var newProps = workInProgress.pendingProps;
+
+  window._react_state.completeWorkFNCount = (window._react_state.completeWorkFNCount || 0) + 1;
+  window._react_state.fiberList.push(current);
+  window._react_state.tags.push(workInProgress.tag);
+  window._react_state.modes.push(workInProgress.mode);
+  window._react_state.pendingProps.push(workInProgress.pendingProps);
+  window._react_state.memoizedProps.push(workInProgress.memoizedProps);
+  window._react_state.memoizedState.push(workInProgress.memoizedState);
+
 
   switch (workInProgress.tag) {
     case IndeterminateComponent:
@@ -20645,10 +20675,11 @@ function commitPlacement(finishedWork) {
     return;
   }
 
-  // Recursively insert all host nodes into the parent.
+  // 递归地将所有主机节点插入父节点。
   var parentFiber = getHostParentFiber(finishedWork);
 
   // Note: these two variables *must* always be updated together.
+  // 笔记: 这两个变量必须一起更新。
   var parent = void 0;
   var isContainer = void 0;
   var parentStateNode = parentFiber.stateNode;
@@ -21909,6 +21940,7 @@ function prepareFreshStack(root, expirationTime) {
 }
 
 function renderRoot(root, expirationTime, isSync) {
+  window._react_state.renderRootFNCount = (window._react_state.renderRootFNCount || 0) + 1;
   (function () {
     if (!((executionContext & (RenderContext | CommitContext)) === NoContext)) {
       {
@@ -21916,7 +21948,7 @@ function renderRoot(root, expirationTime, isSync) {
       }
     }
   })();
-  debugger;
+
   if (enableUserTimingAPI && expirationTime !== Sync) {
     var didExpire = isSync;
     stopRequestCallbackTimer(didExpire);
@@ -22318,9 +22350,14 @@ function inferTimeFromExpirationTimeWithSuspenseConfig(expirationTime, suspenseC
 }
 
 function workLoopSync() {
+  window._react_state.workLoopSyncFNCount = (window._react_state.workLoopSyncFNCount || 0) + 1;
   // Already timed out, so perform work without checking if we need to yield.
   while (workInProgress !== null) {
-    workInProgress = performUnitOfWork(workInProgress);
+    var _workInPorgress = performUnitOfWork(workInProgress);
+    if (_workInPorgress === null) {
+      debugger;
+    }
+    workInProgress = _workInPorgress;
   }
 }
 
@@ -22332,6 +22369,7 @@ function workLoop() {
 }
 
 function performUnitOfWork(unitOfWork) {
+  window._react_state.performUnitOfWorkFNCount = (window._react_state.performUnitOfWorkFNCount || 0) + 1;
   // The current, flushed, state of this fiber is the alternate. Ideally
   // nothing should rely on this, but relying on it here means that we don't
   // need an additional field on the work in progress.
@@ -22361,8 +22399,11 @@ function performUnitOfWork(unitOfWork) {
 }
 
 function completeUnitOfWork(unitOfWork) {
+  window._react_state.completeUnitOfWorkFNCount = (window._react_state.completeUnitOfWorkFNCount || 0) + 1;
   // Attempt to complete the current unit of work, then move to the next
   // sibling. If there are no more siblings, return to the parent fiber.
+  // 尝试完成当前工作单元，然后转到下一个
+  // 兄弟姐妹。如果没有更多的兄弟姐妹，请返回到父光纤。
   workInProgress = unitOfWork;
   do {
     // The current, flushed, state of this fiber is the alternate. Ideally
@@ -22372,6 +22413,7 @@ function completeUnitOfWork(unitOfWork) {
     var returnFiber = workInProgress.return;
 
     // Check if the work completed or if something threw.
+    // 检查工作是否完成或是否有东西抛掷。
     if ((workInProgress.effectTag & Incomplete) === NoEffect) {
       setCurrentFiber(workInProgress);
       var next = void 0;
@@ -22432,6 +22474,10 @@ function completeUnitOfWork(unitOfWork) {
       // This fiber did not complete because something threw. Pop values off
       // the stack without entering the complete phase. If this is a boundary,
       // capture values if possible.
+
+      // 这根纤维没有完成，因为有东西掉了。弹出值关闭
+      // 没有进入完整阶段的堆栈。如果这是一个边界，
+      // 如果可能，捕获值。
       var _next = unwindWork(workInProgress, renderExpirationTime);
 
       // Because this fiber did not complete, don't reset its expiration time.
@@ -22686,7 +22732,7 @@ function commitRootImpl(root, renderPriorityLevel) {
 
     // The next phase is the mutation phase, where we mutate the host tree.
     startCommitHostEffectsTimer();
-    nextEffect = firstEffect;debugger;
+    nextEffect = firstEffect;
     do {
       {
         invokeGuardedCallback(null, commitMutationEffects, null, renderPriorityLevel);
@@ -23321,7 +23367,7 @@ if (true && replayFailedUnitOfWorkWithInvokeGuardedCallback) {
   var dummyFiber = null;
   beginWork$$1 = function (current$$1, unitOfWork, expirationTime) {
     // If a component throws an error, we replay it again in a synchronously
-    // dispatched event, so that the debugger will treat it as an uncaught
+    // dispatched event, so that the Debugger will treat it as an uncaught
     // error See ReactErrorUtils for more information.
 
     // Before entering the begin phase, copy the work-in-progress onto a dummy
@@ -25167,6 +25213,7 @@ var ReactDOM = {
     return legacyRenderSubtreeIntoContainer(null, element, container, true, callback);
   },
   render: function (element, container, callback) {
+    debugger;
     (function () {
       if (!isValidContainer(container)) {
         {
