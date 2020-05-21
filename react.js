@@ -1597,7 +1597,9 @@
   }
 
   function resolveDispatcher () {
+    debugger;
     var dispatcher = ReactCurrentDispatcher.current;
+
     (function () {
       if (!(dispatcher !== null)) {
         {
@@ -1629,6 +1631,7 @@
   }
 
   function useState (initialState) {
+    debugger;
     var dispatcher = resolveDispatcher();
     return dispatcher.useState(initialState);
   }

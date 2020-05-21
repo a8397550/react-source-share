@@ -15981,8 +15981,11 @@ var ContextOnlyDispatcher = {
   useRef: throwInvalidHookError,
   useState: throwInvalidHookError,
   useDebugValue: throwInvalidHookError,
-  useResponder: throwInvalidHookError
+  useResponder: throwInvalidHookError,
+  _react_1: '区分一下React.js ReactCurrentDispatcher.current 是不是同一个对象'
 };
+
+window.ContextOnlyDispatcher = ContextOnlyDispatcher;
 
 var HooksDispatcherOnMountInDEV = null;
 var HooksDispatcherOnMountWithHookTypesInDEV = null;
@@ -16000,6 +16003,7 @@ var InvalidNestedHooksDispatcherOnUpdateInDEV = null;
   };
 
   HooksDispatcherOnMountInDEV = {
+    _react_2: '区分一下React.js ReactCurrentDispatcher.current 是不是同一个对象',
     readContext: function (context, observedBits) {
       return readContext(context, observedBits);
     },
@@ -16084,6 +16088,7 @@ var InvalidNestedHooksDispatcherOnUpdateInDEV = null;
   };
 
   HooksDispatcherOnMountWithHookTypesInDEV = {
+    _react_3: '区分一下React.js ReactCurrentDispatcher.current 是不是同一个对象',
     readContext: function (context, observedBits) {
       return readContext(context, observedBits);
     },
@@ -16163,6 +16168,7 @@ var InvalidNestedHooksDispatcherOnUpdateInDEV = null;
   };
 
   HooksDispatcherOnUpdateInDEV = {
+    _react_4: '区分一下React.js ReactCurrentDispatcher.current 是不是同一个对象',
     readContext: function (context, observedBits) {
       return readContext(context, observedBits);
     },
@@ -16242,6 +16248,7 @@ var InvalidNestedHooksDispatcherOnUpdateInDEV = null;
   };
 
   InvalidNestedHooksDispatcherOnMountInDEV = {
+    _react_5: '区分一下React.js ReactCurrentDispatcher.current 是不是同一个对象',
     readContext: function (context, observedBits) {
       warnInvalidContextAccess();
       return readContext(context, observedBits);
@@ -16333,6 +16340,7 @@ var InvalidNestedHooksDispatcherOnUpdateInDEV = null;
   };
 
   InvalidNestedHooksDispatcherOnUpdateInDEV = {
+    _react_6: '区分一下React.js ReactCurrentDispatcher.current 是不是同一个对象',
     readContext: function (context, observedBits) {
       warnInvalidContextAccess();
       return readContext(context, observedBits);
@@ -21555,6 +21563,7 @@ function computeUniqueAsyncExpiration() {
 }
 
 function scheduleUpdateOnFiber(fiber, expirationTime) {
+  window._react_state.scheduleUpdateOnFiberFNCount = (window._react_state.scheduleUpdateOnFiberFNCount || 0) + 1;
   checkForNestedUpdates();
   warnAboutInvalidUpdatesOnClassComponentsInDEV(fiber);
 
@@ -22594,6 +22603,8 @@ function resetChildExpirationTime(completedWork) {
 }
 
 function commitRoot(root) {
+  window._react_state.commitRootFNCount = (window._react_state.commitRootFNCount || 0) + 1;
+
   var renderPriorityLevel = getCurrentPriorityLevel();
   runWithPriority$2(ImmediatePriority, commitRootImpl.bind(null, root, renderPriorityLevel));
   // If there are passive effects, schedule a callback to flush them. This goes

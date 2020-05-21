@@ -190,10 +190,18 @@
       var DIVSonD = React.createElement("span", { className: 'classD' }, "这里是一个span", reactElement);
       var DivSon = React.createElement("div", { className: 'classB', onClick: function () { alert("点击事件哦") } }, "777", DIVSonD);
       var DivSonA = React.createElement("span", { className: 'classC' }, "这里是一个span");
+      var fnReactElement = React.createElement(function(){
+         var state = React.useState("fnReactElement");
+         return React.createElement('div', {
+            onClick: function(){
+               state[1]("999")
+            }
+         }, state[0]);
+      });
       // props.children
       // ref的使用
       // setState如何触发
-      var Div = React.createElement("div", { className: 'classA' }, DivSon, 999, DivSonA);
+      var Div = React.createElement("div", { className: 'classA' }, fnReactElement, DivSon, 999, DivSonA);
       // 6 5 5 6 5 5 3
       ReactDOM.render(Div, document.getElementById('root'));
    </script>
