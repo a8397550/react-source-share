@@ -19160,6 +19160,15 @@ function cutOffTailIfNeeded(renderState, hasRenderedATailFallback) {
   }
 }
 window._react_state = {
+  fn1: function() {
+    _react_state.workInProgressList.forEach((item) => {
+      if (!item.key) {
+        if (item.stateNode.nodeType === 3) {
+          item.key = item.stateNode.nodeValue
+        }
+      }
+    })
+  },
   count: 0,
   fiberList: [],
   tags: [],
@@ -19173,7 +19182,12 @@ function completeWork(current, workInProgress, renderExpirationTime) {
 
   window._react_state.completeWorkFNCount = (window._react_state.completeWorkFNCount || 0) + 1;
   window._react_state.fiberList.push(current);
-  window._react_state.tags.push(workInProgress.tag);
+  try {
+    window._react_state.tags.push(workInProgress);
+  } catch (e) {
+    debugger;
+    console.log(e);
+  }
   window._react_state.modes.push(workInProgress.mode);
   window._react_state.pendingProps.push(workInProgress.pendingProps);
   window._react_state.memoizedProps.push(workInProgress.memoizedProps);
@@ -22362,6 +22376,10 @@ function workLoopSync() {
   window._react_state.workLoopSyncFNCount = (window._react_state.workLoopSyncFNCount || 0) + 1;
   // Already timed out, so perform work without checking if we need to yield.
   while (workInProgress !== null) {
+    if (!window._react_state.workInProgressList) {
+      window._react_state.workInProgressList = []
+    }
+    window._react_state.workInProgressList.push(workInProgress);
     var _workInPorgress = performUnitOfWork(workInProgress);
     if (_workInPorgress === null) {
       debugger;

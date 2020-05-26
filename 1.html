@@ -6,6 +6,7 @@
    <title>react</title>
    <script src="./react.js"></script>
    <script src="./react-dom/react-dom.js"></script>
+   <!-- <script src="./default/react-dom-default.js"></script> -->
    <style>
       .classA {
          color: red;
@@ -25,11 +26,12 @@
       console.log("React", React);
       console.log("ReactDOM", ReactDOM);
       var strReactElement = React.createElement('div', {
-         children: '888',
-         componentDidMount: function () {
+         key: 11,
+         children: 'div', // 无
+         // componentDidMount: function () {
             // 这玩意不会被执行，不是生命周期，会提示Warning, 
             // 只有React.createElement(fn:function, {});的react元素才有生命周期
-         }
+         // }
       })
 
       var Son2 = (function (Component) {
@@ -47,10 +49,6 @@
          
          */
 
-         Mod.prototype = Object.create(Component.prototype);
-         Mod.prototype.constructor = Mod;
-         Mod.__proto__ = Component;
-
          function Mod(props) {
             var _this;
             _this = Component.call(this, props) || this;
@@ -66,6 +64,10 @@
             return _this;
          }
 
+         Mod.prototype = Object.create(Component.prototype);
+         Mod.prototype.constructor = Mod;
+         Mod.__proto__ = Component;
+
          Mod.prototype.render = function () {
 
 
@@ -79,15 +81,15 @@
             return React.createElement(
                'div',
                {
-                  children: "CC",
-                  key: 'Parent',
+                  key: 13,
                   id: 'Parent',
                   onClick: () => {
                      self.setState({
                         name: 'Parent',
                      })
                   }
-               }
+               },
+               'CC' // 无
             );
          }
          return Mod;
@@ -104,7 +106,7 @@
             var _this;
             _this = Component.call(this, props) || this;
             _this.state = {
-               name: 'TestMod',
+               name: '10',
                errorFlag: false,
             };
 
@@ -171,8 +173,12 @@
             return React.createElement(
                'div',
                {
-                  children: errorFlag ? "发生了错误" : [self.state.name, strReactElement, React.createElement(Son2, null)],
-                  key: 'Parent',
+                  children: errorFlag ? "发生了错误" : [
+                     self.state.name, // key: 10
+                     strReactElement, // key: 11
+                     React.createElement(Son2, {key: 12})  
+                  ],
+                  key: 9,
                   id: 'Parent',
                   onClick: () => {
                      debugger;
@@ -185,24 +191,46 @@
          }
          return Mod;
       }(React.Component))
-      var reactElement = React.createElement(Parent, null);
+      var reactElement = React.createElement(Parent, {key: 8});
 
-      var DIVSonD = React.createElement("span", { className: 'classD' }, "这里是一个span", reactElement);
-      var DivSon = React.createElement("div", { className: 'classB', onClick: function () { alert("点击事件哦") } }, "777", DIVSonD);
-      var DivSonA = React.createElement("span", { className: 'classC' }, "这里是一个span");
-      var fnReactElement = React.createElement(function(){
+      var DIVSonD = React.createElement("span", { key: 6, className: 'classD' }, 
+         "7", // 7
+         reactElement
+      );
+
+      var DivSon = React.createElement("div", 
+         { key: 4, className: 'classB', onClick: function () { alert("点击事件哦") } }, 
+         "5", // key: 5
+         DIVSonD
+      );
+
+      var DivSonA = React.createElement("span", { className: 'classC', key: 14 }, 
+         "这里是一个span" // 无
+      );
+
+      var fnReactElement = React.createElement(function () {
          var state = React.useState("fnReactElement");
          return React.createElement('div', {
-            onClick: function(){
-               state[1]("999")
+            key: 3,
+            onClick: function () {
+               state[1]("fnReactElement update setState")
             }
          }, state[0]);
-      });
-      // props.children
-      // ref的使用
-      // setState如何触发
-      var Div = React.createElement("div", { className: 'classA' }, fnReactElement, DivSon, 999, DivSonA);
-      // 6 5 5 6 5 5 3
+      }, {key: 2});
+
+      var Div = React.createElement("div", { className: 'classA', key: 1 }, 
+         fnReactElement, 
+         DivSon, 
+         DivSonA, 
+         '15' // key: 15
+      );
+
+      // workInProgressList 典型的递归队列顺序
+      
+      // tag(dom生成顺序) 加入顺序 ["3", "2", "5", "7", "10", "11", "13", "12", "9", "8", "6", "4", "14", "15", "1", null]
+      // 按顺序找到叶子节点，如果在找叶子节点的过程中碰到了text节点，就先渲染出来，找到叶子节点，从下往上渲染dom元素
+
+
       ReactDOM.render(Div, document.getElementById('root'));
    </script>
 </body>
