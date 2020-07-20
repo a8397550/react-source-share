@@ -1,0 +1,141 @@
+/** @license React v16.9.0 */
+typescript: 
+(fiber as FiberNode).stateNode // 当前状态
+(fiber as FiberNode).updateQueue // 队列 state queue
+
+情况1，在一个方法体内执行3次setState, 状态如何合并，nextState，prevState呈现什么形态
+state = { // 默认state
+  name: 'CC'
+}
+
+onClick: (e) => {
+  e.stopPropagation();
+  debugger;
+  self.setState({
+    name: 'Son1',
+    a: 1
+  })
+  self.setState({
+    name: 'Son2',
+    b: 2
+  })
+  self.setState({
+    name: 'Son3',
+    c: 3
+  })
+}
+
+(fiber as FiberNode).stateNode = {
+  "name": "CC"
+}
+(fiber as FiberNode).updateQueue = {
+  "baseState": {
+    "name": "CC"
+  },
+  "firstUpdate": {
+    "expirationTime": 1073741823,
+    "suspenseConfig": null,
+    "tag": 0,
+    "payload": {
+      "name": "Son1",
+      "a": 1
+    },
+    "callback": null,
+    "next": {
+      "expirationTime": 1073741823,
+      "suspenseConfig": null,
+      "tag": 0,
+      "payload": {
+        "name": "Son2",
+        "b": 2
+      },
+      "callback": null,
+      "next": {
+        "expirationTime": 1073741823,
+        "suspenseConfig": null,
+        "tag": 0,
+        "payload": {
+          "name": "Son3",
+          "c": 3
+        },
+        "callback": null,
+        "next": null,
+        "nextEffect": null,
+        "priority": 98
+      },
+      "nextEffect": null,
+      "priority": 98
+    },
+    "nextEffect": null,
+    "priority": 98
+  },
+  "lastUpdate": {
+    "expirationTime": 1073741823,
+    "suspenseConfig": null,
+    "tag": 0,
+    "payload": {
+      "name": "Son3",
+      "c": 3
+    },
+    "callback": null,
+    "next": null,
+    "nextEffect": null,
+    "priority": 98
+  },
+  "firstCapturedUpdate": null,
+  "lastCapturedUpdate": null,
+  "firstEffect": null,
+  "lastEffect": null,
+  "firstCapturedEffect": null,
+  "lastCapturedEffect": null
+}
+
+onClick 会被包装一层变成 function noop {} // 为了实现proxy的功能，在方法执行前后干些什么
+
+0.setState
+1. invokeGuardedCallbackDev 里面有一个内部函数callCallback会被触发
+      invokeGuardedCallbackImpl = invokeGuardedCallbackDev; // 别名
+      var invokeGuardedCallbackImpl$1 = invokeGuardedCallbackImpl; // 别名2
+2. invokeGuardedCallback
+3. invokeGuardedCallbackAndCatchFirstError
+4. executeDispatch
+5. executeDispatchesInOrder
+6. executeDispatchesAndRelease
+7. executeDispatchesAndReleaseTopLevel
+8. forEachAccumulated
+9. runEventsInBatch
+10. runExtractedPluginEventsInBatch
+11. handleTopLevel
+12. batchedEventUpdates
+13. dispatchEventForPluginEventSystem
+14. dispatchEvent
+15. unstable_runWithPriority
+16. runWithPriority$2
+17. discreteUpdates$1
+      ReactDOM在初始化时调用了下面方法
+      setBatchingImplementation(batchedUpdates$1, discreteUpdates$1, flushDiscreteUpdates, batchedEventUpdates$1); // 0
+      function setBatchingImplementation(_batchedUpdatesImpl, _discreteUpdatesImpl,
+        _flushDiscreteUpdatesImpl, _batchedEventUpdatesImpl) {
+        batchedUpdatesImpl = _batchedUpdatesImpl;
+        discreteUpdatesImpl = _discreteUpdatesImpl; // 1
+        flushDiscreteUpdatesImpl = _flushDiscreteUpdatesImpl;
+        batchedEventUpdatesImpl = _batchedEventUpdatesImpl;
+      }
+18. discreteUpdates 方法，此方法调用下面方法  // 2
+      discreteUpdatesImpl
+19. dispatchDiscreteEvent 
+      调用discreteUpdates方法
+20. trapEventForPluginEventSystem
+21. trapBubbledEvent
+      初始化时调用了 trapEventForPluginEventSystem
+21. listenTo
+      调用了 trapBubbledEvent
+22. ensureListeningTo
+23. setInitialDOMProperties
+      此方法对props进行了处理
+24. setInitialProperties
+      初始化属性
+25. finalizeInitialChildren
+26. completeWork 
+      初始化React虚拟DOM
+  

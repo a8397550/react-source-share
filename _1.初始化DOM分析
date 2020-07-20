@@ -1,0 +1,196 @@
+React 16.9.0
+
+首先我先介绍React与React-DOM他们之间的关系。
+
+react.js 中定义了React中的各种对象
+
+var hasSymbol = typeof Symbol === 'function' && Symbol.for;
+var REACT_ELEMENT_TYPE = hasSymbol ? Symbol.for('react.element') : 0xeac7;
+var REACT_FRAGMENT_TYPE = hasSymbol ? Symbol.for('react.fragment') : 0xeacb;
+var REACT_PROFILER_TYPE = hasSymbol ? Symbol.for('react.profiler') : 0xead2;
+var REACT_CONTEXT_TYPE = hasSymbol ? Symbol.for('react.context') : 0xeace;
+var REACT_FORWARD_REF_TYPE = hasSymbol ? Symbol.for('react.forward_ref') : 0xead0;
+// ... 等等
+React介绍React.createElement, React.Component, React.PureComponent ...
+
+var type = "div";
+var props = {}
+var children = "777"
+
+// 字符类型的组件
+var strReactElement = React.createElement(type, props, children);
+
+// Class组件 React.Component类型或React.PureComponent类型的组件
+// reactClassElement 请参考下面的定义
+var classReactElement = React.createElement(reactClassElement, props, children);
+
+// 函数组件
+var fnReactElement = React.createElement(function(){
+  var state = React.useState("fnReactElement");
+  return React.createElement('div', {
+    onClick: function(){
+      state[1]("999")
+    }
+  }, state[0]);
+});
+
+var reactClassElement = (function (Component) {
+   /*
+   Component.prototype如下
+
+   isMounted: (...)
+   replaceState: (...)
+   isReactComponent: {}
+   setState: ƒ (partialState, callback)
+   forceUpdate: ƒ (callback)
+   constructor: ƒ Component(props, context, updater)
+   get isMounted: ƒ ()
+   get replaceState: ƒ ()
+   
+   */
+
+   Mod.prototype = Object.create(Component.prototype);
+   Mod.prototype.constructor = Mod;
+   Mod.__proto__ = Component;
+
+   function Mod(props) {
+      var _this;
+      _this = Component.call(this, props) || this;
+      _this.state = {
+         name: 'CC'
+      };
+
+       _this.componentDidMount = function () {
+          // 没参数
+          console.log('componentDidMount', arguments)
+        }
+
+        _this.shouldComponentUpdate = function () {
+          // 接受两个参数nextProps,nextState
+          console.log('shouldComponentUpdate', arguments)
+          return true;
+        }
+
+        _this.getSnapshotBeforeUpdate = function () {
+          // 接受2个参数，return的值作为componentDidUpdate的第三个参数
+          console.log('getSnapShotBeforeUpdate', arguments)
+          return { a: 1 };
+        }
+
+        _this.componentDidUpdate = function () {
+          // 接受3个参数，prevProps，prevState
+          console.log('componentDidUpdate', arguments)
+        }
+
+      _this.componentDidCatch = function (error, info) {
+         // 当自身发生异常时，是不会执行此声明周期的
+         console.log('Son2 componentDidCatch', arguments)
+      }
+
+     _this.componentWillUnmount = function () {
+        // 卸载的声明周期
+     }
+
+      return _this;
+   }
+   
+   // class 组件才具有声明周期，必须要继承React.Component或者React.PureComponent组件
+   // 这个是一个静态的方法，在ES6 的class语法中使用 static 声明 
+   Mod.getDerivedStateFromProps = function () {
+     return null;
+   }
+
+   Mod.prototype.render = function () {
+
+
+      const self = this;
+      console.log(self.state.name);
+
+      if (self.state.name !== 'CC') {
+         a.a = 1;
+      }
+
+      return React.createElement(
+         'div',
+         {
+            children: "CC",
+            key: 'Parent',
+            id: 'Parent',
+            onClick: () => {
+               self.setState({
+                  name: 'Parent',
+               })
+            }
+         }
+      );
+   }
+   return Mod;
+}(React.Component))
+react-dom.js 在执行时，首先会检查有没有React对象存在，没有的话会直接抛错
+
+// ReactDOM.render可以接受3个参数
+// 参数1 必须是一个ReactElement元素
+// 参数2 必须是一个document或DOMElement元素
+// 参数3 callback函数
+ReactDOM.render(Div, document.getElementById('root'));
+请注意只要class组件才能使用生命周期。函数组件可以使用hooks
+
+React 负责创建ReactElement元素，和提供一些与其相关的特意属性和方法，这个会放在后期的内容中介绍
+
+ReactDOM负责将树(Tree)结构的ReactElement渲染成真实DOM，以及给真实DOM中加上属性与方法，并且提供了处理变更DOM方法，虚拟DOM树(或者说是链放在后面给大家讲解，先让大家有一个概念)
+
+今天先介绍，真实DOM是如何被渲染出来的呢? 以及如果要想了解这个问题，应该如何阅读ReactDOM的代码呢，如何在源码中找到这个地方，这里先介绍一下源码阅读的注意事项，以及一些顺序。
+
+在ReactDOM中可以先了解FiberRootNode预计FiberNode两个类型。
+
+// 以下提供了阅读的逆序的方法，请注意执行顺序是倒着来的哦，后面的方法的执行将执行前面的方法，
+先从真实DOM从哪里出现开始，以下代码都在react-dom.js中
+1.createElement 负责创建真实DOM哦
+
+2.createInstance 验证type并在真实DOM中加入FiberNode，Props，
+真实DOM中其实有对应的属性与其对应
+  var randomKey = Math.random().toString(36).slice(2);
+  var internalInstanceKey = '__reactInternalInstance$' + randomKey;
+  var internalEventHandlersKey = '__reactEventHandlers$' + randomKey;
+  node[internalInstanceKey] = FiberNode;
+  node[internalEventHandlersKey] = Props;
+
+3.completeWork 此方法负责将Props里的属性和事件渲染到真实DOM中
+
+4.completeUnitOfWork 处理FiberNode链等等内容..
+
+5.performUnitOfWork 处理FiberNode链等等内容..
+
+6.workLoopSync while循环去处理一个链式结构，他还有一个方法是workLoop这个是异步的做同样的事情
+
+7.renderRoot 初始化时只执行一次，此方法会返回一个callback callback=commitRoot.bind(...)
+commitRoot这个方法也很重要哦
+renderRoot函数还负责workLoopSync这个的执行
+
+8.scheduleUpdateOnFiber 初始化时只执行一次，别名scheduleWork，下面有一段逻辑
+var callback = renderRoot(root, Sync, true); // 返回了一个这个哦 commitRoot.bind(...)
+while (callback !== null) {
+  callback = callback(true);
+}
+commitRoot 初始化时，也只被执行了一次
+
+9.scheduleRootUpdate 负责创建update对象
+var update = createUpdate(expirationTime, suspenseConfig);
+此对象会放在后面重点讲解
+
+10。updateContainerAtExpirationTime 处理容器相关的内容
+并 return scheduleRootUpdate(
+current$$1, element, expirationTime, suspenseConfig, callback);
+
+11. updateContainer 
+
+12.legacyRenderSubtreeIntoContainer 负责创建FiberRootNode与FiberNode
+可以说他是用来创建链表的头的
+
+13.render 检查容器符不符合要求
+container.nodeType 是不是一个元素或者document对象
+阅读源码时，可以使用http://window.xxx.xxx记录函数被执行的次数，用以了解触发一个动作时，执行函数的增量次数
+
+window._react_state.workLoopSyncFNCount = 
+(window._react_state.workLoopSyncFNCount || 0) + 1;
+以上介绍的内容，会在后续章节中继续精细的拆解，会介绍React虚拟DOM长成什么样子，今天已经介绍了真实DOM如何生成以及属性和方法是如何加入到真实DOM中的，为大家的react源码阅读带来更轻松的体验。

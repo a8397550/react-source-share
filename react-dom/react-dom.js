@@ -900,6 +900,8 @@ var FundamentalComponent = 20;
 var randomKey = Math.random().toString(36).slice(2);
 var internalInstanceKey = '__reactInternalInstance$' + randomKey;
 var internalEventHandlersKey = '__reactEventHandlers$' + randomKey;
+window.internalInstanceKey = internalInstanceKey;
+window.internalEventHandlersKey = internalEventHandlersKey;
 
 function precacheFiberNode(hostInst, node) {
   node[internalInstanceKey] = hostInst;
@@ -6066,7 +6068,7 @@ function trapEventForResponderEventSystem(element, topLevelType, passive) {
     } else {
       eventFlags |= IS_ACTIVE;
     }
-    // Check if interactive and wrap in discreteUpdates
+
     var listener = dispatchEvent.bind(null, topLevelType, eventFlags);
     if (passiveBrowserEventsSupported) {
       addEventCaptureListenerWithPassiveFlag(element, rawEventName, listener, passive);
@@ -19178,6 +19180,7 @@ window._react_state = {
   memoizedState: []
 };
 function completeWork(current, workInProgress, renderExpirationTime) {
+  debugger;
   var newProps = workInProgress.pendingProps;
 
   window._react_state.completeWorkFNCount = (window._react_state.completeWorkFNCount || 0) + 1;
@@ -19185,7 +19188,6 @@ function completeWork(current, workInProgress, renderExpirationTime) {
   try {
     window._react_state.tags.push(workInProgress);
   } catch (e) {
-    debugger;
     console.log(e);
   }
   window._react_state.modes.push(workInProgress.mode);
@@ -22382,7 +22384,7 @@ function workLoopSync() {
     window._react_state.workInProgressList.push(workInProgress);
     var _workInPorgress = performUnitOfWork(workInProgress);
     if (_workInPorgress === null) {
-      debugger;
+      console.log('workInPorgress = null');
     }
     workInProgress = _workInPorgress;
   }
@@ -25242,7 +25244,6 @@ var ReactDOM = {
     return legacyRenderSubtreeIntoContainer(null, element, container, true, callback);
   },
   render: function (element, container, callback) {
-    debugger;
     (function () {
       if (!isValidContainer(container)) {
         {
