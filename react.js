@@ -2780,6 +2780,7 @@
   }
 
   function unstable_runWithPriority (priorityLevel, eventHandler) {
+    debugger;
     switch (priorityLevel) {
       case ImmediatePriority:
       case UserBlockingPriority:

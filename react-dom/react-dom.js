@@ -22633,6 +22633,7 @@ function resetChildExpirationTime(completedWork) {
 }
 
 function commitRoot(root) {
+  debugger;
   window._react_state.commitRootFNCount = (window._react_state.commitRootFNCount || 0) + 1;
 
   var renderPriorityLevel = getCurrentPriorityLevel();

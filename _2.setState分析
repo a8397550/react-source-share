@@ -111,6 +111,12 @@ onClick 会被包装一层变成 function noop {} // 为了实现proxy的功能�
 13. dispatchEventForPluginEventSystem
 14. dispatchEvent
 
+
+
+
+
+
+
 15. unstable_runWithPriority (priorityLevel, eventHandler)
     别名 Scheduler_runWithPriority
     return eventHandler();
@@ -156,6 +162,15 @@ onClick 会被包装一层变成 function noop {} // 为了实现proxy的功能�
 
 
 // 阶段一 绑定事件 ，事件代理
+情景一
+  1.绑定 给 document 对象加入click的DOM2级事件，将dispatchEvent.bind绑定到事件中
+  2.触发 dispatchEvent方法
+    触发时，拿到e.target, 从e.target中将FiberNode取出来
+    每个真实DOM都对应一个FiberNode
+    从FiberNode中把onClick方法拿出来
+
+  
+
 20. trapEventForPluginEventSystem 重要
     element = docunent, rawEventName = 'click', listener = function
     addEventBubbleListener(element, rawEventName, listener);
@@ -220,3 +235,17 @@ onClick 会被包装一层变成 function noop {} // 为了实现proxy的功能�
 
 
 // 第三阶段事件回收
+commitRoot(root)
+runRootCallback(root, callback, isSync)
+flushSyncCallbackQueueImpl()
+unstable_runWithPriority(priorityLevel, eventHandler) React里面的方法 重要
+runWithPriority$2(reactPriorityLevel, fn)
+flushSyncCallbackQueue()
+discreteUpdates$1
+discreteUpdates
+dispatchDiscreteEvent
+requestHostCallback React里面的方法
+  requestAnimationFrame
+performWorkUntilDeadline  React里面的方法
+requestAnimationFrame React里面的方法
+在此结束
