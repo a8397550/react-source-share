@@ -194,3 +194,6 @@ container.nodeType 是不是一个元素或者document对象
 window._react_state.workLoopSyncFNCount = 
 (window._react_state.workLoopSyncFNCount || 0) + 1;
 以上介绍的内容，会在后续章节中继续精细的拆解，会介绍React虚拟DOM长成什么样子，今天已经介绍了真实DOM如何生成以及属性和方法是如何加入到真实DOM中的，为大家的react源码阅读带来更轻松的体验。
+
+组件树的渲染规则
+   按顺序找到叶子节点，如果在找叶子节点的过程中碰到了text节点，就先渲染出来，找到叶子节点，从下往上渲染dom元素

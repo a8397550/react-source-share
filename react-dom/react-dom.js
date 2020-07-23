@@ -5215,6 +5215,7 @@ function isFiberMounted(fiber) {
 function isMounted(component) {
   {
     var owner = ReactCurrentOwner$1.current;
+    ;
     if (owner !== null && owner.tag === ClassComponent) {
       var ownerFiber = owner;
       var instance = ownerFiber.stateNode;
@@ -5462,14 +5463,17 @@ function findCurrentHostFiberWithNoPortals(parent) {
 }
 
 function addEventBubbleListener(element, eventType, listener) {
+  console.log('addEventBubbleListener', eventType, element, listener.toString())
   element.addEventListener(eventType, listener, false);
 }
 
 function addEventCaptureListener(element, eventType, listener) {
+  console.log('addEventCaptureListener', eventType, element, listener.toString())
   element.addEventListener(eventType, listener, true);
 }
 
 function addEventCaptureListenerWithPassiveFlag(element, eventType, listener, passive) {
+  console.log('addEventCaptureListenerWithPassiveFlag', eventType, element, listener.toString(), passive)
   element.addEventListener(eventType, listener, {
     capture: true,
     passive: passive
@@ -6211,6 +6215,7 @@ function dispatchEvent(topLevelType, eventSystemFlags, nativeEvent) {
 
 var PossiblyWeakMap = typeof WeakMap === 'function' ? WeakMap : Map;
 var elementListeningSets = new PossiblyWeakMap();
+window.elementListeningSets = elementListeningSets;
 
 function getListeningSetForElement(element) {
   var listeningSet = elementListeningSets.get(element);
@@ -8821,15 +8826,7 @@ function getOwnerDocumentFromRootContainer(rootContainerElement) {
 function noop() {}
 
 function trapClickOnNonInteractiveElement(node) {
-  // Mobile Safari does not fire properly bubble click events on
-  // non-interactive elements, which means delegated click listeners do not
-  // fire. The workaround for this bug involves attaching an empty click
-  // listener on the target node.
-  // http://www.quirksmode.org/blog/archives/2010/09/click_event_del.html
-  // Just set it using the onclick property so that we don't have to manage any
-  // bookkeeping for it. Not sure if we need to clear it when the listener is
-  // removed.
-  // TODO: Only do this for the relevant Safaris maybe?
+  console.log('add onclick', node);
   node.onclick = noop;
 }
 
@@ -11294,6 +11291,7 @@ function findCurrentUnmaskedContext(fiber) {
     // Currently this is only used with renderSubtreeIntoContainer; not sure if it
     // makes sense elsewhere
     (function () {
+      ;
       if (!(isFiberMounted(fiber) && fiber.tag === ClassComponent)) {
         {
           throw ReactError(Error('Expected subtree parent to be a mounted class component. This error is likely caused by a bug in React. Please file an issue.'));
@@ -11302,6 +11300,7 @@ function findCurrentUnmaskedContext(fiber) {
     })();
 
     var node = fiber;
+    ;
     do {
       switch (node.tag) {
         case HostRoot:
@@ -11976,7 +11975,7 @@ function isCompatibleFamilyForHotReloading(fiber, element) {
     var needsCompareFamilies = false;
 
     var $$typeofNextType = typeof nextType === 'object' && nextType !== null ? nextType.$$typeof : null;
-
+    ;
     switch (fiber.tag) {
       case ClassComponent:
         {
@@ -12092,7 +12091,7 @@ function scheduleFibersWithFamiliesRecursively(fiber, updatedFamilies, staleFami
         tag = fiber.tag,
         type = fiber.type;
 
-
+    ;
     var candidateType = null;
     switch (tag) {
       case FunctionComponent:
@@ -12162,7 +12161,7 @@ function findHostInstancesForMatchingFibersRecursively(fiber, types, hostInstanc
         tag = fiber.tag,
         type = fiber.type;
 
-
+    ;
     var candidateType = null;
     switch (tag) {
       case FunctionComponent:
@@ -12457,7 +12456,7 @@ function propagateContextChange(workInProgress, context, changedBits, renderExpi
         // Check if the context matches.
         if (dependency.context === context && (dependency.observedBits & changedBits) !== 0) {
           // Match! Schedule an update on this fiber.
-
+          ;
           if (fiber.tag === ClassComponent) {
             // Schedule a force update on the work-in-progress.
             var update = createUpdate(renderExpirationTime, null);
@@ -12827,6 +12826,7 @@ function enqueueUpdate(fiber, update) {
   }
 
   {
+    ;
     if (fiber.tag === ClassComponent && (currentlyProcessingQueue === queue1 || queue2 !== null && currentlyProcessingQueue === queue2) && !didWarnUpdateInsideUpdate) {
       warningWithoutStack$1(false, 'An update (setState, replaceState, or forceUpdate) was scheduled ' + 'from inside an update function. Update functions should be pure, ' + 'with zero side-effects. Consider using componentDidUpdate or a ' + 'callback.');
       didWarnUpdateInsideUpdate = true;
@@ -13900,6 +13900,7 @@ function coerceRef(returnFiber, current$$1, element) {
       if (owner) {
         var ownerFiber = owner;
         (function () {
+          ;
           if (!(ownerFiber.tag === ClassComponent)) {
             {
               throw ReactError(Error('Function components cannot have refs. Did you mean to use React.forwardRef()?'));
@@ -14768,6 +14769,7 @@ function ChildReconciler(shouldTrackSideEffects) {
       // If the new child is undefined, and the return fiber is a composite
       // component, throw an error. If Fiber return types are disabled,
       // we already threw above.
+      ;
       switch (returnFiber.tag) {
         case ClassComponent:
           {
@@ -17364,6 +17366,7 @@ function mountLazyComponent(_current, workInProgress, elementType, updateExpirat
   startWorkTimer(workInProgress);
   var resolvedProps = resolveDefaultProps(Component, props);
   var child = void 0;
+  ;
   switch (resolvedTag) {
     case FunctionComponent:
       {
@@ -17439,7 +17442,7 @@ function mountIncompleteClassComponent(_current, workInProgress, Component, next
     // Since this is conceptually a new fiber, schedule a Placement effect
     workInProgress.effectTag |= Placement;
   }
-
+  ;
   // Promote the fiber to a class and try rendering again.
   workInProgress.tag = ClassComponent;
 
@@ -17513,7 +17516,7 @@ function mountIndeterminateComponent(_current, workInProgress, Component, render
         didWarnAboutModulePatternComponent[_componentName] = true;
       }
     }
-
+    ;
     // Proceed under the assumption that this is a class instance
     workInProgress.tag = ClassComponent;
 
@@ -18508,6 +18511,7 @@ function beginWork$1(current$$1, workInProgress, renderExpirationTime) {
       // This fiber does not have any pending work. Bailout without entering
       // the begin phase. There's still some bookkeeping we that needs to be done
       // in this optimized path, mostly pushing stuff onto the stack.
+      ;
       switch (workInProgress.tag) {
         case HostRoot:
           pushHostRootContext(workInProgress);
@@ -18640,7 +18644,7 @@ function beginWork$1(current$$1, workInProgress, renderExpirationTime) {
 
   // Before entering the begin phase, clear the expiration time.
   workInProgress.expirationTime = NoWork;
-
+  ;
   switch (workInProgress.tag) {
     case IndeterminateComponent:
       {
@@ -19059,6 +19063,7 @@ if (supportsMutation) {
       return;
     }
     var newInstance = cloneInstance(currentInstance, updatePayload, type, oldProps, newProps, workInProgress, childrenUnchanged, recyclableInstance);
+    // 此处对事件进行设置 finalizeInitialChildren
     if (finalizeInitialChildren(newInstance, type, newProps, rootContainerInstance, currentHostContext)) {
       markUpdate(workInProgress);
     }
@@ -19180,7 +19185,6 @@ window._react_state = {
   memoizedState: []
 };
 function completeWork(current, workInProgress, renderExpirationTime) {
-  debugger;
   var newProps = workInProgress.pendingProps;
 
   window._react_state.completeWorkFNCount = (window._react_state.completeWorkFNCount || 0) + 1;
@@ -19195,7 +19199,7 @@ function completeWork(current, workInProgress, renderExpirationTime) {
   window._react_state.memoizedProps.push(workInProgress.memoizedProps);
   window._react_state.memoizedState.push(workInProgress.memoizedState);
 
-
+  ;
   switch (workInProgress.tag) {
     case IndeterminateComponent:
       break;
@@ -19808,6 +19812,7 @@ function updateEventListeners(listeners, instance, rootContainerInstance, fiber)
 }
 
 function unwindWork(workInProgress, renderExpirationTime) {
+  ;
   switch (workInProgress.tag) {
     case ClassComponent:
       {
@@ -19887,6 +19892,7 @@ function unwindWork(workInProgress, renderExpirationTime) {
 }
 
 function unwindInterruptedWork(interruptedWork) {
+  ;
   switch (interruptedWork.tag) {
     case ClassComponent:
       {
@@ -20030,7 +20036,7 @@ function logError(boundary, errorInfo) {
     errorBoundaryFound: false,
     willRetry: false
   };
-
+  ;
   if (boundary !== null && boundary.tag === ClassComponent) {
     capturedError.errorBoundary = boundary.stateNode;
     capturedError.errorBoundaryName = getComponentName(boundary.type);
@@ -20098,6 +20104,7 @@ function safelyCallDestroy(current$$1, destroy) {
 }
 
 function commitBeforeMutationLifeCycles(current$$1, finishedWork) {
+  ;
   switch (finishedWork.tag) {
     case FunctionComponent:
     case ForwardRef:
@@ -20215,6 +20222,7 @@ function commitPassiveHookEffects(finishedWork) {
 }
 
 function commitLifeCycles(finishedRoot, current$$1, finishedWork, committedExpirationTime) {
+  ;
   switch (finishedWork.tag) {
     case FunctionComponent:
     case ForwardRef:
@@ -20274,6 +20282,7 @@ function commitLifeCycles(finishedRoot, current$$1, finishedWork, committedExpir
       }
     case HostRoot:
       {
+        ;
         var _updateQueue = finishedWork.updateQueue;
         if (_updateQueue !== null) {
           var _instance = null;
@@ -20437,7 +20446,7 @@ function commitDetachRef(current$$1) {
 // interrupt deletion, so it's okay
 function commitUnmount(current$$1, renderPriorityLevel) {
   onCommitUnmount(current$$1);
-
+  ;
   switch (current$$1.tag) {
     case FunctionComponent:
     case ForwardRef:
@@ -20600,7 +20609,7 @@ function commitContainer(finishedWork) {
   if (!supportsPersistence) {
     return;
   }
-
+  ;
   switch (finishedWork.tag) {
     case ClassComponent:
     case HostComponent:
@@ -20945,7 +20954,7 @@ function commitWork(current$$1, finishedWork) {
     commitContainer(finishedWork);
     return;
   }
-
+  ;
   switch (finishedWork.tag) {
     case FunctionComponent:
     case ForwardRef:
@@ -21248,7 +21257,7 @@ function throwException(root, returnFiber, sourceFiber, value, renderExpirationT
           // But we shouldn't call any lifecycle methods or callbacks. Remove
           // all lifecycle effect tags.
           sourceFiber.effectTag &= ~(LifecycleEffectMask | Incomplete);
-
+          ;
           if (sourceFiber.tag === ClassComponent) {
             var currentSourceFiber = sourceFiber.alternate;
             if (currentSourceFiber === null) {
@@ -21367,6 +21376,7 @@ function throwException(root, returnFiber, sourceFiber, value, renderExpirationT
   renderDidError();
   value = createCapturedValue(value, sourceFiber);
   var workInProgress = returnFiber;
+  ;
   do {
     switch (workInProgress.tag) {
       case HostRoot:
@@ -22639,6 +22649,8 @@ function commitRoot(root) {
 }
 
 function commitRootImpl(root, renderPriorityLevel) {
+  window._react_state.commitRootImplFNCount = (window._react_state.commitRootImplFNCount || 0) + 1;
+
   flushPassiveEffects();
   flushRenderPhaseStrictModeWarningsInDEV();
 
@@ -22766,6 +22778,7 @@ function commitRootImpl(root, renderPriorityLevel) {
     nextEffect = firstEffect;
     do {
       {
+        ;
         invokeGuardedCallback(null, commitMutationEffects, null, renderPriorityLevel);
         if (hasCaughtError()) {
           (function () {
@@ -23152,7 +23165,7 @@ function captureCommitPhaseError(sourceFiber, error) {
     captureCommitPhaseErrorOnRoot(sourceFiber, sourceFiber, error);
     return;
   }
-
+  ;
   var fiber = sourceFiber.return;
   while (fiber !== null) {
     if (fiber.tag === HostRoot) {
@@ -23373,6 +23386,7 @@ function checkForInterruption(fiberThatReceivedUpdate, updateExpirationTime) {
 var didWarnStateUpdateForUnmountedComponent = null;
 function warnAboutUpdateOnUnmountedFiberInDEV(fiber) {
   {
+    ;
     var tag = fiber.tag;
     if (tag !== HostRoot && tag !== ClassComponent && tag !== FunctionComponent && tag !== ForwardRef && tag !== MemoComponent && tag !== SimpleMemoComponent) {
       // Only warn for user-defined components, not internal ones like Suspense.
@@ -23389,6 +23403,7 @@ function warnAboutUpdateOnUnmountedFiberInDEV(fiber) {
     } else {
       didWarnStateUpdateForUnmountedComponent = new Set([componentName]);
     }
+    ;
     warningWithoutStack$1(false, "Can't perform a React state update on an unmounted component. This " + 'is a no-op, but it indicates a memory leak in your application. To ' + 'fix, cancel all subscriptions and asynchronous tasks in %s.%s', tag === ClassComponent ? 'the componentWillUnmount method' : 'a useEffect cleanup function', getStackByFiberInDevAndProd(fiber));
   }
 }
@@ -23450,6 +23465,7 @@ var didWarnAboutUpdateInRender = false;
 var didWarnAboutUpdateInGetChildContext = false;
 function warnAboutInvalidUpdatesOnClassComponentsInDEV(fiber) {
   {
+    ;
     if (fiber.tag === ClassComponent) {
       switch (phase) {
         case 'getChildContext':
@@ -23533,6 +23549,7 @@ function checkForWrongSuspensePriorityInDEV(sourceFiber) {
         if (current$$1 !== null) {
           // TODO: warn component that triggers the high priority
           // suspend is the HostRoot
+          ;
           switch (workInProgressNode.tag) {
             case ClassComponent:
               // Loop through the component's update queue and see whether the component
@@ -23970,6 +23987,7 @@ function isSimpleFunctionComponent(type) {
 
 function resolveLazyComponentTag(Component) {
   if (typeof Component === 'function') {
+    ;
     return shouldConstruct(Component) ? ClassComponent : FunctionComponent;
   } else if (Component !== undefined && Component !== null) {
     var $$typeof = Component.$$typeof;
@@ -24058,6 +24076,7 @@ function createWorkInProgress(current, pendingProps, expirationTime) {
 
   {
     workInProgress._debugNeedsRemount = current._debugNeedsRemount;
+    ;
     switch (workInProgress.tag) {
       case IndeterminateComponent:
       case FunctionComponent:
@@ -24175,6 +24194,7 @@ key, pendingProps, owner, mode, expirationTime) {
   var resolvedType = type;
   if (typeof type === 'function') {
     if (shouldConstruct(type)) {
+      ;
       fiberTag = ClassComponent;
       {
         resolvedType = resolveClassForHotReloading(resolvedType);
@@ -24497,7 +24517,7 @@ function getContextForSubtree(parentComponent) {
 
   var fiber = get(parentComponent);
   var parentContext = findCurrentUnmaskedContext(fiber);
-
+  ;
   if (fiber.tag === ClassComponent) {
     var Component = fiber.type;
     if (isContextProvider(Component)) {
@@ -24509,6 +24529,7 @@ function getContextForSubtree(parentComponent) {
 }
 
 function scheduleRootUpdate(current$$1, element, expirationTime, suspenseConfig, callback) {
+  window._react_state.scheduleRootUpdateFNCount = (window._react_state.scheduleRootUpdateFNCount || 0) + 1;
   {
     if (phase === 'render' && current !== null && !didWarnAboutNestedUpdates) {
       didWarnAboutNestedUpdates = true;

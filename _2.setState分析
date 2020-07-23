@@ -93,6 +93,7 @@ onClick: (e) => {
 onClick 会被包装一层变成 function noop {} // 为了实现proxy的功能，在方法执行前后干些什么
 
 0.setState
+// 阶段二 触发事件
 1. invokeGuardedCallbackDev 里面有一个内部函数callCallback会被触发
       invokeGuardedCallbackImpl = invokeGuardedCallbackDev; // 别名
       var invokeGuardedCallbackImpl$1 = invokeGuardedCallbackImpl; // 别名2
@@ -109,9 +110,32 @@ onClick 会被包装一层变成 function noop {} // 为了实现proxy的功能�
 12. batchedEventUpdates
 13. dispatchEventForPluginEventSystem
 14. dispatchEvent
-15. unstable_runWithPriority
-16. runWithPriority$2
-17. discreteUpdates$1
+
+15. unstable_runWithPriority (priorityLevel, eventHandler)
+    别名 Scheduler_runWithPriority
+    return eventHandler();
+
+16. runWithPriority$2(reactPriorityLevel, fn)
+
+
+    处理二
+      renderRoot 方法调用 commitRoot.bind(...)
+      commitRoot 被执行触发 runWithPriority$2
+      runWithPriority$2 传入了 fn = commitRootImpl.bind(null, root, renderPriorityLevel)
+      runWithPriority$2 方法 return Scheduler_runWithPriority(priorityLevel, fn);
+      Scheduler_runWithPriority 方法执行了 fn
+
+      commitRootImpl被执行，会执行commitMutationEffects, commitLayoutEffects
+        commitMutationEffects被执行，会执行commitPlacement
+          commitPlacement 递归将所有的节点都加入到主节点
+        commitLayoutEffects被执行，会执行commitLifeCycles
+          commitLifeCycles 触发class组件都componentDidMount, componentDidUpdate
+
+17. discreteUpdates$1 (fn, a, b, c) 
+    return runWithPriority$2(UserBlockingPriority$2, fn.bind(null, a, b, c));
+18. discreteUpdates 方法，此方法调用下面方法  // 2
+      discreteUpdatesImpl(dispatchEvent, ...) 实际是调用 discreteUpdates$1
+
       ReactDOM在初始化时调用了下面方法
       setBatchingImplementation(batchedUpdates$1, discreteUpdates$1, flushDiscreteUpdates, batchedEventUpdates$1); // 0
       function setBatchingImplementation(_batchedUpdatesImpl, _discreteUpdatesImpl,
@@ -121,21 +145,78 @@ onClick 会被包装一层变成 function noop {} // 为了实现proxy的功能�
         flushDiscreteUpdatesImpl = _flushDiscreteUpdatesImpl;
         batchedEventUpdatesImpl = _batchedEventUpdatesImpl;
       }
-18. discreteUpdates 方法，此方法调用下面方法  // 2
-      discreteUpdatesImpl
-19. dispatchDiscreteEvent 
-      调用discreteUpdates方法
-20. trapEventForPluginEventSystem
+    
+19. dispatchDiscreteEvent (topLevelType, eventSystemFlags, nativeEvent) 
+      调用discreteUpdates(dispatchEvent, ...)方法
+
+
+
+
+
+
+
+// 阶段一 绑定事件 ，事件代理
+20. trapEventForPluginEventSystem 重要
+    element = docunent, rawEventName = 'click', listener = function
+    addEventBubbleListener(element, rawEventName, listener);
+    function addEventBubbleListener(element, eventType, listener) {
+      element.addEventListener(eventType, listener, false);
+    }
+
+    function trapEventForPluginEventSystem(element, topLevelType, capture) {
+      var listener = void 0;
+      switch (getEventPriority(topLevelType)) {
+        case DiscreteEvent:
+          listener = dispatchDiscreteEvent.bind(null, topLevelType, PLUGIN_EVENT_SYSTEM);
+          break;
+        case UserBlockingEvent:
+          listener = dispatchUserBlockingUpdate.bind(null, topLevelType, PLUGIN_EVENT_SYSTEM);
+          break;
+        case ContinuousEvent:
+        default:
+          listener = dispatchEvent.bind(null, topLevelType, PLUGIN_EVENT_SYSTEM);
+          break;
+      }
+
+      var rawEventName = getRawEventName(topLevelType);
+      if (capture) {
+        addEventCaptureListener(element, rawEventName, listener);
+      } else {
+        addEventBubbleListener(element, rawEventName, listener);
+      }
+    }
+
+
 21. trapBubbledEvent
       初始化时调用了 trapEventForPluginEventSystem
 21. listenTo
       调用了 trapBubbledEvent
 22. ensureListeningTo
+
 23. setInitialDOMProperties
       此方法对props进行了处理
+      会对所有的定义的React事件进行处理
+      registrationNameModules = [onClick, ...]
+      else if (registrationNameModules.hasOwnProperty(propKey)) {
+        if (nextProp != null) {
+          if (true && typeof nextProp !== 'function') {
+            warnForInvalidEventListener(propKey, nextProp);
+          }
+          ensureListeningTo(rootContainerElement, propKey);
+        }
+      }
 24. setInitialProperties
       初始化属性
+      // 情景介绍一，假设你的标签不是一个input,textarea,option,select,会执行下面代码
+      if (typeof props.onClick === 'function') {
+        trapClickOnNonInteractiveElement(domElement);
+      }
+      function trapClickOnNonInteractiveElement(node) {
+        node.onclick = noop;
+      }
 25. finalizeInitialChildren
 26. completeWork 
       初始化React虚拟DOM
-  
+
+
+// 第三阶段事件回收

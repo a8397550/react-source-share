@@ -111,6 +111,8 @@
           errorFlag: false,
         };
 
+        window._self = _this;
+
         _this.componentDidMount = function () {
           // 没参数
           console.log('componentDidMount', arguments)
@@ -139,6 +141,25 @@
           _this.setState({
             errorFlag: true,
           })
+        }
+
+        _this.fn = function () {
+          debugger;
+          if (_this._ref) {
+            var _self = _this._ref;
+            _self.setState({
+              name: 'Son1',
+              a: 1
+            })
+            _self.setState({
+              name: 'Son2',
+              b: 2
+            })
+            _self.setState({
+              name: 'Son3',
+              c: 3
+            })
+          }
         }
 
         return _this;
@@ -172,12 +193,13 @@
           {
             children: errorFlag ? "发生了错误" : [
               self.state.name,
-              React.createElement(Son, {key: 2})
+              React.createElement(Son, {key: 2, ref: function (_ref) { self._ref = _ref; } })
             ],
             key: 9,
             id: 'Parent',
             onClick: () => {
               debugger;
+              self.fn();
               self.setState({
                 name: 'Parent',
               })
@@ -186,8 +208,27 @@
         );
       }
       return Mod;
-    }(React.Component))
+    }(React.Component));
 
+    function fn() {
+      debugger;
+      _self.setState({
+        name: 'Son1',
+        a: 1
+      })
+      _self.setState({
+        name: 'Son2',
+        b: 2
+      })
+      _self.setState({
+        name: 'Son3',
+        c: 3
+      })
+    }
+
+    function fn2() {
+      _self.fn();
+    }
 
     var reactElement = React.createElement(Parent, { key: 1 });
     ReactDOM.render(reactElement, document.getElementById('root'));
