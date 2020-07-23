@@ -167,8 +167,12 @@ onClick 会被包装一层变成 function noop {} // 为了实现proxy的功能�
   2.触发 dispatchEvent方法
     触发时，拿到e.target, 从e.target中将FiberNode取出来
     每个真实DOM都对应一个FiberNode
-    从FiberNode中把onClick方法拿出来
-
+    从FiberNode中把onClick方法拿出来，
+    继续向下执行，传递回调函数，利用js模拟事件，触发一个事件，执行onClick函数，此时这个模拟事件相当于一个proxy
+  3.onClick执行完毕，虚拟DOM此时因为OnClick已经计算完毕
+    回调函数回归，触发commitRoot.bind(FiberNodeRoot)，触发commitRootImpl.bind(FiberNodeRoot)
+  4.执行虚拟DOM变更
+（只有在React事件绑定中，setState才会状态合并，会进行回归）
   
 
 20. trapEventForPluginEventSystem 重要
