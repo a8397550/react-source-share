@@ -160,6 +160,7 @@ ReactDOM负责将树(Tree)结构的ReactElement渲染成真实DOM，以及给真
 4.completeUnitOfWork 处理FiberNode链等等内容..
 
 5.performUnitOfWork 处理FiberNode链等等内容..
+  创建class组件，初始化生命周期等
 
 6.workLoopSync while循环去处理一个链式结构，他还有一个方法是workLoop这个是异步的做同样的事情
 
@@ -197,3 +198,16 @@ window._react_state.workLoopSyncFNCount =
 
 组件树的渲染规则
    按顺序找到叶子节点，如果在找叶子节点的过程中碰到了text节点，就先渲染出来，找到叶子节点，从下往上渲染dom元素
+
+beginWork$1(current$$1, workInProgress, renderExpirationTime)
+   mountLazyComponent(_current, workInProgress, elementType, updateExpirationTime, renderExpirationTime)
+      updateClassComponent(current$$1, workInProgress, Component, nextProps, renderExpirationTime)
+         constructClassInstance(workInProgress, Component, nextProps, renderExpirationTime);
+   updateClassComponent(current$$1, workInProgress, Component, nextProps, renderExpirationTime)
+      constructClassInstance(workInProgress, Component, nextProps, renderExpirationTime);
+初始化Class组件
+   performUnitOfWork
+      beginWork$$1 = function (current$$1, unitOfWork, expirationTime)
+         beginWork$1(current$$1, workInProgress, renderExpirationTime)
+            mountIncompleteClassComponent(_current, workInProgress, Component, nextProps, renderExpirationTime)
+               constructClassInstance(workInProgress, Component, nextProps, renderExpirationTime);

@@ -18487,6 +18487,7 @@ function remountFiber(current$$1, oldWorkInProgress, newWorkInProgress) {
 }
 
 function beginWork$1(current$$1, workInProgress, renderExpirationTime) {
+  debugger;
   var updateExpirationTime = workInProgress.expirationTime;
 
   {

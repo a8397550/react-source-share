@@ -9,7 +9,6 @@
       (global.React = factory());
 }(this, (function () {
   'use strict';
-  debugger;
   /**
    * @description React的版本号
    */
@@ -1597,7 +1596,6 @@
   }
 
   function resolveDispatcher () {
-    debugger;
     var dispatcher = ReactCurrentDispatcher.current;
 
     (function () {
@@ -1631,7 +1629,6 @@
   }
 
   function useState (initialState) {
-    debugger;
     var dispatcher = resolveDispatcher();
     return dispatcher.useState(initialState);
   }
@@ -2780,7 +2777,6 @@
   }
 
   function unstable_runWithPriority (priorityLevel, eventHandler) {
-    debugger;
     switch (priorityLevel) {
       case ImmediatePriority:
       case UserBlockingPriority:
