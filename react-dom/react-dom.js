@@ -10139,12 +10139,13 @@ var noTimeout = -1;
 var supportsMutation = true;
 
 function commitMount(domElement, type, newProps, internalInstanceHandle) {
-  // Despite the naming that might imply otherwise, this method only
-  // fires if there is an `Update` effect scheduled during mounting.
-  // This happens if `finalizeInitialChildren` returns `true` (which it
-  // does to implement the `autoFocus` attribute on the client). But
-  // there are also other cases when this might happen (such as patching
-  // up text content during hydration mismatch). So we'll check this again.
+  // 尽管命名可能暗示了其他含义，但仅此方法
+  // 如果在装载期间计划了“更新”效果，则激发。
+  // 如果“finalizeInitialChildren”返回“true”（它
+  // 在客户端上实现“autoFocus”属性）。但是
+  // 还有其他可能发生这种情况的情况（例如修补
+  // 在水合作用不匹配时增加文本内容）。我们再检查一遍。
+
   if (shouldAutoFocusHostComponent(type, newProps)) {
     domElement.focus();
   }
@@ -18487,7 +18488,6 @@ function remountFiber(current$$1, oldWorkInProgress, newWorkInProgress) {
 }
 
 function beginWork$1(current$$1, workInProgress, renderExpirationTime) {
-  debugger;
   var updateExpirationTime = workInProgress.expirationTime;
 
   {
@@ -19040,6 +19040,7 @@ if (supportsMutation) {
     }
   };
   updateHostComponent$1 = function (current, workInProgress, type, newProps, rootContainerInstance) {
+    debugger;
     var currentInstance = current.stateNode;
     var oldProps = current.memoizedProps;
     // If there are no effects associated with this node, then none of our children had any updates.
@@ -19239,6 +19240,7 @@ function completeWork(current, workInProgress, renderExpirationTime) {
       }
     case HostComponent:
       {
+        debugger;
         popHostContext(workInProgress);
         var rootContainerInstance = getRootHostContainer();
         var type = workInProgress.type;
@@ -22634,7 +22636,6 @@ function resetChildExpirationTime(completedWork) {
 }
 
 function commitRoot(root) {
-  debugger;
   window._react_state.commitRootFNCount = (window._react_state.commitRootFNCount || 0) + 1;
 
   var renderPriorityLevel = getCurrentPriorityLevel();

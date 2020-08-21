@@ -156,6 +156,9 @@ ReactDOM负责将树(Tree)结构的ReactElement渲染成真实DOM，以及给真
   node[internalEventHandlersKey] = Props;
 
 3.completeWork 此方法负责将Props里的属性和事件渲染到真实DOM中
+   finalizeInitialChildren
+      setInitialProperties 初始化属性
+            setInitialDOMProperties 此方法对props进行了处理 会对所有的定义的React事件进行处理
 
 4.completeUnitOfWork 处理FiberNode链等等内容..
 
@@ -211,3 +214,6 @@ beginWork$1(current$$1, workInProgress, renderExpirationTime)
          beginWork$1(current$$1, workInProgress, renderExpirationTime)
             mountIncompleteClassComponent(_current, workInProgress, Component, nextProps, renderExpirationTime)
                constructClassInstance(workInProgress, Component, nextProps, renderExpirationTime);
+
+finalizeInitialChildren
+   setInitialProperties 
