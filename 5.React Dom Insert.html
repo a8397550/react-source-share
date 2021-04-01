@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>React Dom Insert</title>
+  <script src="./react.js"></script>
+  <script src="./react-dom/react-dom.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/babel-standalone/7.0.0-beta.3/babel.min.js"></script>
+  <style>
+
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+</body>
+<script type="text/babel">
+
+  class SonDom extends React.Component {
+    render() {
+      return (<div key={`key_${this.props.name}`}>
+        {this.props.name}
+        <span key="span_container"><span key="span_son" style={{paddingRight: 20}}>SonDom</span> text</span>
+      </div>)
+    }
+  }
+
+
+  class ParentDom extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        data: [
+          {
+            name: "a",
+          },
+          {
+            name: "b",
+          },
+          {
+            name: "c"
+          }
+        ]
+      }
+    }
+
+    delete(index) {
+      const { data } = this.state;
+
+      data.splice(index, 1);
+
+      this.setState({
+        data
+      })
+    }
+
+    update(name, index) {
+      const { data } = this.state;
+      const obj = data[index];
+
+      if (obj) {
+        obj.name = String(name);
+
+        this.setState({
+          data
+        })
+      }
+    }
+
+    insert(name, index) {
+      const { data } = this.state;
+      name = String(name);
+
+      data.splice(index, 0, {
+        name,
+      })
+
+      this.setState({
+        data
+      })
+    }
+
+    componentDidMount() {
+      __self = this;
+    }
+
+    render() {
+      return (<div key="parent">
+        {
+          this.state.data.map(item => {
+            return <SonDom key={item.name} {...item} />
+          })
+        }
+      </div>)
+    }
+  }
+
+  ReactDOM.render(
+    <ParentDom />,
+    document.getElementById('app')
+  );
+
+</script>
+
+</html>
